@@ -5,6 +5,6 @@
 // @ts-ignore: Unused imports
 import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Create } from "@wailsio/runtime";
 
-export function GenerateSpeech(s: string, outputPath: string): $CancellablePromise<void> {
+export function GenerateSpeech(s: string, outputPath: string): $CancellablePromise<string> {
     return $Call.ByID(1983586767, s, outputPath);
 }

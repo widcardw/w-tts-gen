@@ -8,3 +8,11 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 export function GetOs(): $CancellablePromise<string> {
     return $Call.ByID(3792000209);
 }
+
+export function OpenFile(path: string): $CancellablePromise<void> {
+    return $Call.ByID(1223424991, path);
+}
+
+export function OpenFolder(path: string): $CancellablePromise<void> {
+    return $Call.ByID(3657682329, path);
+}

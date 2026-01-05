@@ -1,6 +1,6 @@
 import { createSignal, Show } from 'solid-js'
 import {Dialogs} from "@wailsio/runtime";
-import {NativeTts} from "../../bindings/bridgetts/services";
+import {NativeTts, OsService} from "../../bindings/bridgetts/services";
 import clsx from 'clsx';
 
 function Home() {
@@ -8,6 +8,7 @@ function Home() {
   const [outputPath, setOutputPath] = createSignal('');
   const [errMsg, setErrMsg] = createSignal()
   const [isLoading, setIsLoading] = createSignal(false)
+  const [finalAudioPath, setFinalAudioPath] = createSignal('')
   
   async function ChooseOutputDialog() {
     try {
@@ -15,6 +16,7 @@ function Home() {
         AllowsMultipleSelection: false,
         CanChooseDirectories: true,
         CanChooseFiles: true,
+        Title: "Choose Output Path/Directory",
       });
       if (selectedPath) {
         setOutputPath(selectedPath);
@@ -32,7 +34,8 @@ function Home() {
     }
     try {
       setIsLoading(true)
-      await NativeTts.GenerateSpeech(content(), outputPath())
+      const audioPath = await NativeTts.GenerateSpeech(content(), outputPath())
+      setFinalAudioPath(audioPath)
     } catch (err) {
       setErrMsg(err)
     } finally {
@@ -60,7 +63,7 @@ function Home() {
           <input 
             id="output-path"
             aria-label="outputPath" 
-            class="block flex-1 p-2 bg-input-bg focus:border-primary focus:ring-2 focus:ring-primary/30 rounded-md text-text"
+            class="block flex-1 p-2 bg-input-bg focus:border-primary focus:ring-2 focus:ring-primary/30 rounded-md text-text font-mono"
             value={outputPath()}
             onInput={(e) => setOutputPath(e.target.value)}
           />
@@ -92,6 +95,12 @@ function Home() {
           Generate
         </button>
       </div>
+      <Show when={finalAudioPath()}>
+        <div class="p-3 bg-success/10 text-success border border-success/30 rounded-md">
+          File saved at <code>{finalAudioPath()}</code>. 
+          <a onClick={() => OsService.OpenFolder(outputPath())} class="hover:underline cursor-pointer">Open folder</a>.
+        </div>
+      </Show>
     </div>
   )
 }
