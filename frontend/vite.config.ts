@@ -13,9 +13,6 @@ export default defineConfig({
     solid(), 
     UnoCSS()
   ],
-  server: {
-    port: 9245,
-  },
   resolve: {
     alias: {
       "~": new URL("src", import.meta.url).href,

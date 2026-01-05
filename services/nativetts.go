@@ -3,10 +3,12 @@ package services
 import (
 	"crypto/md5"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	// "strings"
 	"time"
 )
 
@@ -36,15 +38,24 @@ func (n *NativeTts) GenerateSpeech(s string, outputPath string) (string, error) 
 			tmp := outputPath + ".aiff"
 			cmd1 := exec.Command("say", "-o", tmp, s)
 			if err := cmd1.Run(); err != nil {
+				log.Fatal("Failed to generate tts!")
 				return "", err
 			}
+			
+			// darwinOutPath := strings.ReplaceAll(outputPath, "wav", "aac")
 
-			cmd2 := exec.Command("afconvert", tmp, "-o", outputPath, "-f m4af -d aac")
-			if err := cmd2.Run(); err != nil {
-				return "", err
-			}
-			os.Remove(tmp)
-			return outputPath, nil
+			// cmd2 := exec.Command("afconvert", tmp, "-o", darwinOutPath, "-f m4af -d aac")
+			// if err := cmd2.Run(); err != nil {
+			// 	log.Fatal("Failed to convert aiff to aac!")
+			// 	return "", err
+			// }
+			
+			// if err := os.Remove(tmp); err != nil {
+			// 	log.Fatal("Failed to remove old file!")
+			// 	return "", err
+			// }
+			
+			return tmp, nil
 		}
 	case "windows":
 		{
