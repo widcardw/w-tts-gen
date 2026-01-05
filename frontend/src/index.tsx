@@ -1,7 +1,26 @@
 /* @refresh reload */
-import { render } from 'solid-js/web'
-import App from './App'
+import { render, Suspense } from 'solid-js/web'
+import { Router } from '@solidjs/router'
+import routes from '~solid-pages'
+import Layout from './components/Layout'
+import './styles/global.css'
+import 'virtual:uno.css'
 
-const root = document.getElementById('root')
-
-render(() => <App />, root!)
+render(
+  () => {
+    return (
+      <Router
+        root={props => (
+          <Suspense>
+            <Layout>
+              {props.children}
+            </Layout>
+          </Suspense>
+        )}
+      >
+        {routes}
+      </Router>
+    )
+  },
+  document.getElementById('root') as HTMLElement,
+)

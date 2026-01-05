@@ -39,7 +39,7 @@ func main() {
 		Name:        "w-tts",
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
-			application.NewService(&services.GreetService{}),
+			application.NewService(&services.OsService{}),
 			application.NewService(&services.NativeTts{}),
 		},
 		Assets: application.AssetOptions{

@@ -1,59 +1,96 @@
-# Welcome to Your New Wails3 Project!
+# W-TTS-Gen - 跨平台语音合成应用
 
-Congratulations on generating your Wails3 application! This README will guide you through the next steps to get your project up and running.
+一个基于 Wails3 + Go + SolidJS 开发的跨平台语音合成应用，支持在 Windows、macOS 和 Linux 系统上生成音频文件。
 
-## Getting Started
+## ✨ 功能特性
 
-1. Navigate to your project directory in the terminal.
+- 🎤 **语音合成**：将文本转换为音频文件
+- 🌐 **跨平台支持**：支持 Windows、macOS 和 Linux 系统
+- 📁 **自定义输出路径**：选择音频文件的保存位置
+- 🎨 **现代化 UI**：基于 SolidJS 和 UnoCSS 的简洁界面
+- 📱 **响应式设计**：适配不同屏幕尺寸
 
-2. To run your application in development mode, use the following command:
+## 🛠️ 技术栈
 
-   ```
-   wails3 dev
-   ```
+### 后端
+- **Go**：高性能后端开发语言
+- **Wails3**：跨平台桌面应用框架
 
-   This will start your application and enable hot-reloading for both frontend and backend changes.
+### 前端
+- **SolidJS**：高性能 JavaScript 框架
+- **TypeScript**：类型安全的 JavaScript 超集
+- **UnoCSS**：原子化 CSS 框架
+- **Iconify (Remix Icons)**：丰富的图标库
 
-3. To build your application for production, use:
+## 🚀 快速开始 (Dev)
 
-   ```
-   wails3 build
-   ```
+### 前提条件
 
-   This will create a production-ready executable in the `build` directory.
+- Go 1.20+（推荐）
+- Node.js 18+（推荐）
+- Wails3 CLI（安装方法见下文）
 
-## Exploring Wails3 Features
+### 安装 Wails3 CLI
 
-Now that you have your project set up, it's time to explore the features that Wails3 offers:
+```bash
+# 使用 Go 安装 Wails3 CLI
+go install github.com/wailsapp/wails/v3/cmd/wails3@latest
+```
 
-1. **Check out the examples**: The best way to learn is by example. Visit the `examples` directory in the `v3/examples` directory to see various sample applications.
+### 开发模式
 
-2. **Run an example**: To run any of the examples, navigate to the example's directory and use:
+1. 克隆项目到本地
 
-   ```
-   go run .
-   ```
+2. 安装前端依赖：
 
-   Note: Some examples may be under development during the alpha phase.
+```bash
+cd frontend
+pnpm install
+```
 
-3. **Explore the documentation**: Visit the [Wails3 documentation](https://v3.wails.io/) for in-depth guides and API references.
+3. 返回项目根目录，启动开发服务器：
 
-4. **Join the community**: Have questions or want to share your progress? Join the [Wails Discord](https://discord.gg/JDdSxwjhGf) or visit the [Wails discussions on GitHub](https://github.com/wailsapp/wails/discussions).
+```bash
+wails3 dev
+```
 
-## Project Structure
+这将启动应用并启用热重载功能，支持前端和后端代码的实时更新。
 
-Take a moment to familiarize yourself with your project structure:
+### 生产构建
 
-- `frontend/`: Contains your frontend code (HTML, CSS, JavaScript/TypeScript)
-- `main.go`: The entry point of your Go backend
-- `app.go`: Define your application structure and methods here
-- `wails.json`: Configuration file for your Wails project
+```bash
+wails3 build
+```
 
-## Next Steps
+构建完成后，可执行文件将生成在 `build` 目录中。
 
-1. Modify the frontend in the `frontend/` directory to create your desired UI.
-2. Add backend functionality in `main.go`.
-3. Use `wails3 dev` to see your changes in real-time.
-4. When ready, build your application with `wails3 build`.
+## 📦 项目结构
 
-Happy coding with Wails3! If you encounter any issues or have questions, don't hesitate to consult the documentation or reach out to the Wails community.
+```
+├── frontend/             # 前端代码目录
+│   ├── src/              # 源代码
+│   │   ├── components/   # 组件
+│   │   ├── pages/        # 页面
+│   │   ├── styles/       # 样式文件
+│   │   └── index.tsx     # 前端入口
+│   ├── public/           # 静态资源
+│   ├── package.json      # 前端依赖
+│   └── vite.config.ts    # Vite 配置
+├── services/             # Go 服务
+├── main.go               # Go 后端入口
+├── go.mod                # Go 依赖
+└── README.md             # 项目说明文档
+```
+
+## 📖 使用说明
+
+> Linux 用户需要预先安装 `espeak` 语音合成引擎。
+
+1. 在文本框中输入要转换的文字
+2. 点击「Choose」按钮选择音频文件的保存路径
+3. 点击「Generate」按钮生成音频文件
+4. 生成完成后，音频文件将保存在指定路径
+
+## 📄 许可证
+
+MIT License
