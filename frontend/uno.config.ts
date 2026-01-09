@@ -1,7 +1,7 @@
-import { defineConfig, presetIcons, presetWind4 } from 'unocss'
+import { defineConfig, presetIcons, presetWind3 } from 'unocss'
 
 export default defineConfig({
-  presets: [presetWind4(), presetIcons()],
+  presets: [presetWind3(), presetIcons()],
   theme: {
     colors: {
       primary: 'var(--color-primary)',

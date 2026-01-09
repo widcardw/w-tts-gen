@@ -2,7 +2,10 @@ module bridgetts
 
 go 1.25
 
-require github.com/wailsapp/wails/v3 v3.0.0-alpha.55
+require (
+	github.com/wailsapp/wails/v3 v3.0.0-alpha.55
+	gopkg.in/yaml.v3 v3.0.1
+)
 
 require (
 	dario.cat/mergo v1.0.1 // indirect

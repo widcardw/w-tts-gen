@@ -4,17 +4,13 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {
-  Call as $Call,
-  CancellablePromise as $CancellablePromise,
-  Create as $Create,
-} from "@wailsio/runtime";
+import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Create } from "@wailsio/runtime";
 
 /**
  * @returns {$CancellablePromise<string>}
  */
 export function GetOs() {
-  return $Call.ByID(3792000209);
+    return $Call.ByID(3792000209);
 }
 
 /**
@@ -22,7 +18,7 @@ export function GetOs() {
  * @returns {$CancellablePromise<void>}
  */
 export function OpenFile(path) {
-  return $Call.ByID(1223424991, path);
+    return $Call.ByID(1223424991, path);
 }
 
 /**
@@ -30,5 +26,13 @@ export function OpenFile(path) {
  * @returns {$CancellablePromise<void>}
  */
 export function OpenFolder(path) {
-  return $Call.ByID(3657682329, path);
+    return $Call.ByID(3657682329, path);
+}
+
+/**
+ * @param {string} path
+ * @returns {$CancellablePromise<string>}
+ */
+export function PathStat(path) {
+    return $Call.ByID(1196189020, path);
 }

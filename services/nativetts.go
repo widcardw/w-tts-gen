@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
+
 	// "strings"
 	"time"
 )
@@ -35,7 +37,10 @@ func (n *NativeTts) GenerateSpeech(s string, outputPath string) (string, error) 
 	switch goos {
 	case "darwin":
 		{
-			tmp := outputPath + ".aiff"
+			var tmp = outputPath
+			if !strings.HasSuffix(outputPath, ".aiff") {
+				tmp = outputPath + ".aiff"
+			}
 			cmd1 := exec.Command("say", "-o", tmp, s)
 			if err := cmd1.Run(); err != nil {
 				log.Fatal("Failed to generate tts!")

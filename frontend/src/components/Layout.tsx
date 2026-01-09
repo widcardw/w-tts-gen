@@ -9,6 +9,7 @@ const Layout: Component<{ children: any }> = (props) => {
   const tabs = [
     { path: '/', label: 'Native TTS', icon: 'i-ri-computer-line' },
     { path: '/edge', label: 'Edge TTS', icon: 'i-ri-edge-new-fill' },
+    { path: '/settings', label: 'Settings', icon: 'i-ri-settings-line' },
   ]
 
   const [goos, setGoos] = createSignal<string>('')
@@ -18,8 +19,8 @@ const Layout: Component<{ children: any }> = (props) => {
   })
 
   return (
-    <div class="min-h-screen bg-bg">
-      <header class="border-b border-border">
+    <div class="min-h-screen bg-bg flex flex-col">
+      <header class="border-b border-b-solid border-border bg-bg" style="position: sticky; top:0">
         <nav class="px-4">
           <div class={clsx('flex', goos() === 'darwin' && 'ml-60px')}>
             <For each={tabs}>
@@ -30,7 +31,7 @@ const Layout: Component<{ children: any }> = (props) => {
                   class={clsx(
                     'flex items-center space-x-2',
                     'px-4 py-2 rounded-t-md text-sm font-medium',
-                    'border-b-2 border-t-2 border-t-transparent',
+                    'border-b-2 border-b-solid border-t-2 border-t-solid border-t-transparent',
                     location.pathname === tab.path
                       ? 'bg-bg-alt text-primary border-primary'
                       : 'text-text-muted hover:text-primary border-transparent',

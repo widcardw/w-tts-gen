@@ -37,10 +37,11 @@ func main() {
 	// 'Mac' options tailor the application when running an macOS.
 	app := application.New(application.Options{
 		Name:        "W-TTS",
-		Description: "A TTS tool using wailsv3",
+		Description: "A TTS tool using wails v3",
 		Services: []application.Service{
 			application.NewService(&services.OsService{}),
 			application.NewService(&services.NativeTts{}),
+			application.NewService(&services.ConfigService{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
