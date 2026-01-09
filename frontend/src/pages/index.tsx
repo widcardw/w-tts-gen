@@ -1,8 +1,8 @@
-import { Show } from "solid-js";
-import { Dialogs } from "@wailsio/runtime";
-import { NativeTts, OsService } from "../../bindings/bridgetts/services";
-import clsx from "clsx";
-import { nativeStore as ns, setNativeStore } from "../stores/app";
+import { Show } from 'solid-js'
+import { Dialogs } from '@wailsio/runtime'
+import { NativeTts, OsService } from '../../bindings/bridgetts/services'
+import clsx from 'clsx'
+import { nativeStore as ns, setNativeStore } from '../stores/app'
 
 function Home() {
   async function ChooseOutputDialog() {
@@ -11,71 +11,59 @@ function Home() {
         AllowsMultipleSelection: false,
         CanChooseDirectories: true,
         CanChooseFiles: true,
-        Title: "Choose Output Path/Directory",
-      });
+        Title: 'Choose Output Path/Directory',
+      })
       if (selectedPath) {
-        setNativeStore("outputPath", selectedPath);
+        setNativeStore('outputPath', selectedPath)
       }
     } catch (err) {
-      console.error("Error selecting file:", err);
-      setNativeStore("outputPath", "");
-      setNativeStore("errMsg", err);
+      console.error('Error selecting file:', err)
+      setNativeStore('outputPath', '')
+      setNativeStore('errMsg', err)
     }
-    await checkPathStat();
+    await checkPathStat()
   }
 
   async function generateTtsNative() {
-    if (ns.content.trim() === "" || ns.outputPath === "") {
-      return;
+    if (ns.content.trim() === '' || ns.outputPath === '') {
+      return
     }
     try {
-      setNativeStore("isLoading", true);
-      const audioPath = await NativeTts.GenerateSpeech(
-        ns.content,
-        ns.outputPath,
-      );
-      setNativeStore("finalAudioPath", audioPath);
+      setNativeStore('isLoading', true)
+      const audioPath = await NativeTts.GenerateSpeech(ns.content, ns.outputPath)
+      setNativeStore('finalAudioPath', audioPath)
     } catch (err) {
-      setNativeStore("errMsg", err);
+      setNativeStore('errMsg', err)
     } finally {
-      setNativeStore("isLoading", false);
+      setNativeStore('isLoading', false)
     }
   }
 
   async function checkPathStat() {
-    if (ns.outputPath.trim() == "") {
-      setNativeStore("pathState", "");
-      return;
+    if (ns.outputPath.trim() == '') {
+      setNativeStore('pathState', '')
+      return
     }
-    const stat = await OsService.PathStat(ns.outputPath);
+    const stat = await OsService.PathStat(ns.outputPath)
     switch (stat) {
-      case "file": {
-        setNativeStore(
-          "pathState",
-          "Selected a file. Generating TTS will overwrite the file.",
-        );
-        break;
+      case 'file': {
+        setNativeStore('pathState', 'Selected a file. Generating TTS will overwrite the file.')
+        break
       }
-      case "dir": {
-        setNativeStore(
-          "pathState",
-          "Selected a folder. The TTS file will be put in the folder.",
-        );
-        break;
+      case 'dir': {
+        setNativeStore('pathState', 'Selected a folder. The TTS file will be put in the folder.')
+        break
       }
-      case "empty": {
-        setNativeStore("pathState", "No folder/path Selected.");
-        break;
+      case 'empty': {
+        setNativeStore('pathState', 'No folder/path Selected.')
+        break
       }
-      case "non-exist": {
-        setNativeStore(
-          "pathState",
-          "The folder does not exist. It will be created automatically.",
-        );
-        break;
+      case 'non-exist': {
+        setNativeStore('pathState', 'The folder does not exist. It will be created automatically.')
+        break
       }
       default: {
-        setNativeStore("pathState", `Caught error: ${stat}`);
+        setNativeStore('pathState', `Caught error: ${stat}`)
       }
     }
   }
@@ -89,11 +77,11 @@ function Home() {
         <textarea
           id="content"
           value={ns.content}
-          onInput={(e) => setNativeStore("content", e.target.value)}
+          onInput={(e) => setNativeStore('content', e.target.value)}
           autocomplete="false"
           class={clsx(
-            "w-full h-48 px-4 py-2 border border-border rounded-md text-sm",
-            "bg-input-bg resize-y focus:border-blue focus:ring-2 focus:ring-blue:30",
+            'w-full h-48 px-4 py-2 border border-border rounded-md text-sm',
+            'bg-input-bg resize-y focus:border-blue focus:ring-2 focus:ring-blue:30',
           )}
           placeholder="Please input the text to synthesize..."
         ></textarea>
@@ -108,12 +96,12 @@ function Home() {
             id="output-path"
             aria-label="outputPath"
             class={clsx(
-              "block flex-1 p-2 bg-input-bg",
-              "focus:border-blue focus:ring-2 focus:ring-blue:30",
-              "rounded-md text-sm font-mono",
+              'block flex-1 p-2 bg-input-bg',
+              'focus:border-blue focus:ring-2 focus:ring-blue:30',
+              'rounded-md text-sm font-mono',
             )}
             value={ns.outputPath}
-            onInput={(e) => setNativeStore("outputPath", e.target.value)}
+            onInput={(e) => setNativeStore('outputPath', e.target.value)}
             onBlur={checkPathStat}
           />
           <button
@@ -125,8 +113,8 @@ function Home() {
           </button>
         </div>
         <label class="block text-0.75rem font-light text-text">
-          {ns.pathState === "" && ns.outputPath.trim() === ""
-            ? "No folder selected."
+          {ns.pathState === '' && ns.outputPath.trim() === ''
+            ? 'No folder selected.'
             : ns.pathState}
         </label>
       </div>
@@ -140,14 +128,12 @@ function Home() {
       <div class="flex justify-end">
         <button
           class={clsx(
-            "text-sm bg-blue hover:bg-blue-hover",
-            "text-white rounded-md font-medium",
-            "disabled:bg-secondary disabled:cursor-not-allowed",
+            'text-sm bg-blue hover:bg-blue-hover',
+            'text-white rounded-md font-medium',
+            'disabled:bg-secondary disabled:cursor-not-allowed',
           )}
           onClick={generateTtsNative}
-          disabled={
-            ns.content.trim() === "" || ns.outputPath === "" || ns.isLoading
-          }
+          disabled={ns.content.trim() === '' || ns.outputPath === '' || ns.isLoading}
         >
           Generate
         </button>
@@ -165,7 +151,7 @@ function Home() {
         </div>
       </Show>
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home
