@@ -1,40 +1,43 @@
-import { Component, createSignal, For, onMount } from 'solid-js';
-import { useLocation } from '@solidjs/router';
-import clsx from 'clsx';
-import { OsService } from "../../bindings/bridgetts/services";
+import { Component, createSignal, For, onMount } from 'solid-js'
+import { useLocation } from '@solidjs/router'
+import clsx from 'clsx'
+import { OsService } from '../../bindings/bridgetts/services'
 
 const Layout: Component<{ children: any }> = (props) => {
-  const location = useLocation();
-  
-  const tabs = [
-    { path: '/', label: 'Native TTS' },
-    { path: '/edge', label: 'Edge TTS' },
-  ];
+  const location = useLocation()
 
-  const [goos, setGoos] = createSignal<string>('');
+  const tabs = [
+    { path: '/', label: 'Native TTS', icon: 'i-ri-computer-line' },
+    { path: '/edge', label: 'Edge TTS', icon: 'i-ri-edge-new-fill' },
+  ]
+
+  const [goos, setGoos] = createSignal<string>('')
 
   onMount(async () => {
-    setGoos(await OsService.GetOs());
+    setGoos(await OsService.GetOs())
   })
-  
+
   return (
     <div class="min-h-screen bg-bg">
       <header class="border-b border-border">
         <nav class="px-4">
-          <div class={clsx("flex space-x-1", goos() === 'darwin' && 'ml-60px')}>
+          <div class={clsx('flex', goos() === 'darwin' && 'ml-60px')}>
             <For each={tabs}>
-              {tab => (
+              {(tab) => (
                 <a
                   aria-key={tab.path}
                   href={tab.path}
                   class={clsx(
-                    'px-4 py-2 rounded-t-md text-sm font-medium transition-colors border-b-2',
-                    location.pathname === tab.path 
-                    ? 'bg-bg-alt text-primary border-primary' 
-                    : 'text-text-muted hover:text-primary border-transparent'
+                    'flex items-center space-x-2',
+                    'px-4 py-2 rounded-t-md text-sm font-medium',
+                    'border-b-2 border-t-2 border-t-transparent',
+                    location.pathname === tab.path
+                      ? 'bg-bg-alt text-primary border-primary'
+                      : 'text-text-muted hover:text-primary border-transparent',
                   )}
                 >
-                  {tab.label}
+                  <div class={tab.icon} />
+                  <span>{tab.label}</span>
                 </a>
               )}
             </For>
@@ -45,7 +48,7 @@ const Layout: Component<{ children: any }> = (props) => {
         {props.children}
       </main>
     </div>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

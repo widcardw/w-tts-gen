@@ -7,8 +7,7 @@
 import { Create as $Create } from "@wailsio/runtime";
 
 function configure() {
-    Object.freeze(Object.assign($Create.Events, {
-    }));
+  Object.freeze(Object.assign($Create.Events, {}));
 }
 
 configure();

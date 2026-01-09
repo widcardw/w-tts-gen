@@ -10,11 +10,9 @@ render(
   () => {
     return (
       <Router
-        root={props => (
+        root={(props) => (
           <Suspense>
-            <Layout>
-              {props.children}
-            </Layout>
+            <Layout>{props.children}</Layout>
           </Suspense>
         )}
       >

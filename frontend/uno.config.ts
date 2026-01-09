@@ -1,10 +1,7 @@
 import { defineConfig, presetIcons, presetWind4 } from 'unocss'
 
 export default defineConfig({
-  presets: [
-    presetWind4(),
-    presetIcons(),
-  ],
+  presets: [presetWind4(), presetIcons()],
   theme: {
     colors: {
       primary: 'var(--color-primary)',
@@ -30,6 +27,6 @@ export default defineConfig({
       // 输入框颜色
       'input-bg': 'var(--color-input-bg)',
       'input-text': 'var(--color-input-text)',
-    }
-  }
+    },
+  },
 })

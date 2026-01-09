@@ -36,8 +36,8 @@ func main() {
 	// 'Bind' is a list of Go struct instances. The frontend has access to the methods of these instances.
 	// 'Mac' options tailor the application when running an macOS.
 	app := application.New(application.Options{
-		Name:        "w-tts",
-		Description: "A demo of using raw HTML & CSS",
+		Name:        "W-TTS",
+		Description: "A TTS tool using wailsv3",
 		Services: []application.Service{
 			application.NewService(&services.OsService{}),
 			application.NewService(&services.NativeTts{}),
@@ -56,7 +56,7 @@ func main() {
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title: "Window 1",
+		Title: "W-TTS",
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
@@ -64,6 +64,8 @@ func main() {
 		},
 		BackgroundColour: application.NewRGB(27, 38, 54),
 		URL:              "/",
+		MinWidth: 800,
+		MinHeight: 600,
 	})
 
 	// Create a goroutine that emits an event containing the current time every second.

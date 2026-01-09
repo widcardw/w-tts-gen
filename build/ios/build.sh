@@ -2,8 +2,8 @@
 set -e
 
 # Build configuration
-APP_NAME="w-tts"
-BUNDLE_ID="com.example.wtts"
+APP_NAME=""
+BUNDLE_ID="com.wails."
 VERSION="0.1.0"
 BUILD_NUMBER="0.1.0"
 BUILD_DIR="build/ios"
