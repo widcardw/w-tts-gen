@@ -42,6 +42,7 @@ func main() {
 			application.NewService(&services.OsService{}),
 			application.NewService(&services.NativeTts{}),
 			application.NewService(&services.ConfigService{}),
+			application.NewService(&services.EdgeTtsService{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),

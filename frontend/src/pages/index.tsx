@@ -30,7 +30,9 @@ function Home() {
   });
 
   onMount(async () => {
-    await getVoices();
+    if (ns.voiceInfo.length === 0) {
+      await getVoices();
+    }
   });
 
   async function ChooseOutputDialog() {
@@ -121,7 +123,7 @@ function Home() {
           onInput={(e) => setNativeStore("content", e.target.value)}
           autocomplete="false"
           class={clsx(
-            "w-full h-48 px-4 py-2 border border-border rounded-md text-sm",
+            "w-full h-48 min-h-3rem max-h-20rem px-4 py-2 border border-border rounded-md text-sm",
             "bg-input-bg resize-y focus:border-blue focus:ring-2 focus:ring-blue/30",
           )}
           placeholder="Please input the text to synthesize..."
@@ -189,22 +191,22 @@ function Home() {
               <div class="flex items-center space-x-4">
                 <select
                   name="language"
-                  class="text-sm"
+                  class="text-sm text-text"
                   value={ns.selLang}
                   onChange={(v) => setNativeStore("selLang", v.target.value)}
                 >
-                  <option value="">Please Select</option>
+                  <option value="">Select Locale</option>
                   <For each={ns.voiceLangs}>
                     {(lang) => <option value={lang}>{lang}</option>}
                   </For>
                 </select>
                 <select
                   name="speaker-name"
-                  class="text-sm"
+                  class="text-sm text-text"
                   value={ns.selSpeaker}
                   onChange={(v) => setNativeStore("selSpeaker", v.target.value)}
                 >
-                  <option value="">Please Select</option>
+                  <option value="">Select Speaker</option>
                   <For each={ns.voiceInfo.filter((i) => i.lang === ns.selLang)}>
                     {(speaker) => (
                       <option value={speaker.name}>{speaker.name}</option>

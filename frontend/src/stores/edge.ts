@@ -1,0 +1,34 @@
+import { createStore } from "solid-js/store";
+import { Voice } from "../../bindings/github.com/wujunwei928/edge-tts-go/edge_tts";
+
+const [edgeStore, setEdgeStore] = createStore<{
+  content: string
+  outputPath: string
+  errMsg: any
+  isLoading: boolean
+  finalAudioPath: string
+  pathState: string
+  voiceInfo: Voice[];
+  locales: string[];
+  selLocale: string;
+  selVoiceName: string
+  rate: number
+  volume: number
+  pitch: number
+}>({
+  content: '',
+  outputPath: '',
+  errMsg: null,
+  isLoading: false,
+  finalAudioPath: '',
+  pathState: '',
+  voiceInfo: [],
+  locales: [],
+  selLocale: "",
+  selVoiceName: '',
+  rate: 0,
+  volume: 0,
+  pitch: 0,
+});
+
+export { edgeStore, setEdgeStore };

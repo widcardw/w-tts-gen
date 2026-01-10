@@ -6,10 +6,11 @@ import Layout from './components/Layout'
 import { onMount } from 'solid-js'
 import { ConfigService } from '../bindings/bridgetts/services'
 import { AppConfig, setConfigStore, setNativeStore } from './stores/app'
+import { setEdgeStore } from './stores/edge'
+import { watchThemeIfAuto, changeTheme } from './utils/theme'
 
 import 'virtual:uno.css'
 import './styles/global.css'
-import { watchThemeIfAuto, changeTheme } from './utils/theme'
 
 render(
   () => {
@@ -19,6 +20,7 @@ render(
       setConfigStore('defaultSaveDir', conf.defaultSaveDir)
       setConfigStore('theme', conf.theme)
       setNativeStore('outputPath', conf.defaultSaveDir)
+      setEdgeStore('outputPath', conf.defaultSaveDir)
       changeTheme(conf.theme as 'auto' | 'light' | 'dark')
       watchThemeIfAuto()
     })
