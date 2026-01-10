@@ -9,13 +9,18 @@ import { AppConfig, setConfigStore, setNativeStore } from './stores/app'
 
 import 'virtual:uno.css'
 import './styles/global.css'
+import { watchThemeIfAuto, changeTheme } from './utils/theme'
 
 render(
   () => {
     onMount(async () => {
       const conf: AppConfig = await ConfigService.ReadConfig()
-      setConfigStore(conf)
+      setConfigStore('compress', conf.compress)
+      setConfigStore('defaultSaveDir', conf.defaultSaveDir)
+      setConfigStore('theme', conf.theme)
       setNativeStore('outputPath', conf.defaultSaveDir)
+      changeTheme(conf.theme as 'auto' | 'light' | 'dark')
+      watchThemeIfAuto()
     })
 
     return (

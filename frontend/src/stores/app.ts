@@ -20,6 +20,7 @@ const [nativeStore, setNativeStore] = createStore<{
 class AppConfig {
   compress = false
   defaultSaveDir = ''
+  theme = 'auto'
   constructor(source = {}) {
     Object.assign(this, source)
   }
@@ -31,6 +32,7 @@ class AppConfig {
 const [configStore, setConfigStore] = createStore<AppConfig>({
   compress: false,
   defaultSaveDir: '',
+  theme: 'auto',
 })
 
 const [configChanged, setConfigChanged] = createSignal(false)

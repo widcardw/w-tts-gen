@@ -13,6 +13,7 @@ type ConfigService struct{}
 
 var Config = &AppConfig{
 	Compress: false,
+	Theme:    "auto",
 }
 
 func GetPath(path string) string {
@@ -42,6 +43,7 @@ func createConfigDir() string {
 func (c *ConfigService) WriteConfig(conf *AppConfig) (string, error) {
 	Config.Compress = conf.Compress
 	Config.DefaultSaveDir = conf.DefaultSaveDir
+	Config.Theme = conf.Theme
 	yBytes, err := yaml.Marshal(&Config)
 	if err != nil {
 		log.Printf("Failed to encode config into yaml, %s", err)
@@ -58,7 +60,7 @@ func (c *ConfigService) WriteConfig(conf *AppConfig) (string, error) {
 
 func (c *ConfigService) OpenConfigDir() error {
 	confDir := createConfigDir()
-	
+
 	app := application.Get()
 	return app.Env.OpenFileManager(confDir, false)
 }

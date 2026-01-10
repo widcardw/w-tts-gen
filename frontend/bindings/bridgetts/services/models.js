@@ -26,6 +26,13 @@ export class AppConfig {
              */
             this["compress"] = false;
         }
+        if (!("theme" in $$source)) {
+            /**
+             * @member
+             * @type {string}
+             */
+            this["theme"] = "";
+        }
 
         Object.assign(this, $$source);
     }

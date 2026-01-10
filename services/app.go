@@ -27,4 +27,5 @@ var Env = &EnvResult{
 type AppConfig struct {
 	DefaultSaveDir string `json:"defaultSaveDir"`
 	Compress       bool   `json:"compress"`
+	Theme          string `json:"theme"`
 }

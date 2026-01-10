@@ -81,7 +81,7 @@ function Home() {
           autocomplete="false"
           class={clsx(
             'w-full h-48 px-4 py-2 border border-border rounded-md text-sm',
-            'bg-input-bg resize-y focus:border-blue focus:ring-2 focus:ring-blue:30',
+            'bg-input-bg resize-y focus:border-blue focus:ring-2 focus:ring-blue/30',
           )}
           placeholder="Please input the text to synthesize..."
         ></textarea>
@@ -97,7 +97,7 @@ function Home() {
             aria-label="outputPath"
             class={clsx(
               'block flex-1 p-2 bg-input-bg',
-              'focus:border-blue focus:ring-2 focus:ring-blue:30',
+              'focus:border-blue focus:ring-2 focus:ring-blue/30',
               'rounded-md text-sm font-mono',
             )}
             value={ns.outputPath}
@@ -106,7 +106,7 @@ function Home() {
           />
           <button
             aria-label="choose-output-btn"
-            class="bg-secondary p-2 hover:bg-secondary-hover text-white text-sm rounded-md"
+            class="bg-blue p-2 hover:bg-blue/80 text-white text-sm rounded-md"
             onClick={ChooseOutputDialog}
           >
             Choose
@@ -120,7 +120,7 @@ function Home() {
       </div>
 
       <Show when={ns.errMsg}>
-        <div class="p-3 bg-destructive:10 text-destructive border border-destructive:30 rounded-md">
+        <div class="p-3 bg-red/10 text-red border border-red/30 rounded-md">
           {String(ns.errMsg)}
         </div>
       </Show>
@@ -130,7 +130,7 @@ function Home() {
           class={clsx(
             'text-sm bg-blue hover:bg-blue-hover',
             'text-white rounded-md font-medium',
-            'disabled:bg-secondary disabled:cursor-not-allowed',
+            'disabled:bg-gray disabled:cursor-not-allowed',
           )}
           onClick={generateTtsNative}
           disabled={ns.content.trim() === '' || ns.outputPath === '' || ns.isLoading}
@@ -139,7 +139,7 @@ function Home() {
         </button>
       </div>
       <Show when={ns.finalAudioPath}>
-        <div class="p-3 bg-green:10 text-green text-sm border border-green:30 rounded-md">
+        <div class="p-3 bg-green/10 text-green text-sm border border-green/30 rounded-md">
           File saved at <code>{ns.finalAudioPath}</code>.
           <a
             onClick={() => OsService.OpenFolder(ns.finalAudioPath)}
