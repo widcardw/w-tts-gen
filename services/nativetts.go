@@ -3,20 +3,55 @@ package services
 import (
 	"crypto/md5"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 
-	// "strings"
 	"time"
+
+	ni "bridgetts/services/nativeinvocation"
 )
 
 type NativeTts struct{}
 
-func (n *NativeTts) GenerateSpeech(s string, outputPath string) (string, error) {
+func (n *NativeTts) GetVoices() ([]ni.VoiceInfo, error) {
+	goos := runtime.GOOS
+	switch goos {
+	case "darwin":
+		{
+			return ni.GetDarwinVoiceList()
+		}
+	case "windows":
+		{
+			return ni.GetWindowsVoiceList()
+		}
+	default:
+		{
+			return nil, fmt.Errorf("OS not supported.")
+		}
+	}
+}
+
+func (n *NativeTts) TryListening(v ni.VoiceInfo) error {
+	goos := runtime.GOOS
+	switch goos {
+	case "darwin":
+		{
+			return ni.TryListeningDarwin(v)
+		}
+	case "windows":
+		{
+			return ni.TryListeningWindows(v)
+		}
+	default:
+		{
+			return fmt.Errorf("OS not supported.")
+		}
+	}
+}
+
+func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string) (string, error) {
 	goos := runtime.GOOS
 
 	// Check if outputPath is a directory
@@ -37,43 +72,11 @@ func (n *NativeTts) GenerateSpeech(s string, outputPath string) (string, error) 
 	switch goos {
 	case "darwin":
 		{
-			var tmp = outputPath
-			if !strings.HasSuffix(outputPath, ".aiff") {
-				tmp = outputPath + ".aiff"
-			}
-			cmd1 := exec.Command("say", "-o", tmp, s)
-			if err := cmd1.Run(); err != nil {
-				log.Fatal("Failed to generate tts!")
-				return "", err
-			}
-			
-			// darwinOutPath := strings.ReplaceAll(outputPath, "wav", "aac")
-
-			// cmd2 := exec.Command("afconvert", tmp, "-o", darwinOutPath, "-f m4af -d aac")
-			// if err := cmd2.Run(); err != nil {
-			// 	log.Fatal("Failed to convert aiff to aac!")
-			// 	return "", err
-			// }
-			
-			// if err := os.Remove(tmp); err != nil {
-			// 	log.Fatal("Failed to remove old file!")
-			// 	return "", err
-			// }
-			
-			return tmp, nil
+			return ni.DarwinGenerateTts(v, outputPath, s)
 		}
 	case "windows":
 		{
-			script := fmt.Sprintf(`Add-Type -AssemblyName System.Speech
-$s = New-Object System.Speech.Synthesis.SpeechSynthesizer
-$s.SetOutputToWaveFile("%s")
-$s.Speak("%s")
-$s.SetOutputToDefaultAudioDevice()`, outputPath, s)
-			cmd := exec.Command("powershell", "-Command", script)
-			if err := cmd.Run(); err != nil {
-				return "", err
-			}
-			return outputPath, nil
+			return ni.WindowsGenerateTts(v, outputPath, s)
 		}
 	default:
 		{

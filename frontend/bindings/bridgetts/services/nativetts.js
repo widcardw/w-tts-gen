@@ -6,11 +6,37 @@
 // @ts-ignore: Unused imports
 import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Create } from "@wailsio/runtime";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as nativeinvocation$0 from "./nativeinvocation/models.js";
+
 /**
+ * @param {nativeinvocation$0.VoiceInfo} v
  * @param {string} s
  * @param {string} outputPath
  * @returns {$CancellablePromise<string>}
  */
-export function GenerateSpeech(s, outputPath) {
-    return $Call.ByID(1983586767, s, outputPath);
+export function GenerateSpeech(v, s, outputPath) {
+    return $Call.ByID(1983586767, v, s, outputPath);
 }
+
+/**
+ * @returns {$CancellablePromise<nativeinvocation$0.VoiceInfo[]>}
+ */
+export function GetVoices() {
+    return $Call.ByID(2329090449).then(/** @type {($result: any) => any} */(($result) => {
+        return $$createType1($result);
+    }));
+}
+
+/**
+ * @param {nativeinvocation$0.VoiceInfo} v
+ * @returns {$CancellablePromise<void>}
+ */
+export function TryListening(v) {
+    return $Call.ByID(1847763084, v);
+}
+
+// Private type creation functions
+const $$createType0 = nativeinvocation$0.VoiceInfo.createFrom;
+const $$createType1 = $Create.Array($$createType0);
