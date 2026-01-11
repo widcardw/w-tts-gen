@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"syscall"
 )
 
 func GetWindowsVoiceList() ([]VoiceInfo, error) {
@@ -23,6 +24,7 @@ $speech.GetInstalledVoices() | ForEach-Object {
 ConvertTo-Json -InputObject $voices
 `
 	cmd := exec.Command("powershell", "-Command", psCommand)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get voices! %v", err)
@@ -48,6 +50,7 @@ $s.SelectVoice("%s")
 $s.Speak("%s")`, escapeForPowerShell(v.Name), escapeForPowerShell(v.Desc))
 	}
 	cmd := exec.Command("powershell", "-Command", script)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	return cmd.Run()
 }
 
@@ -68,6 +71,7 @@ $s.Speak("%s")
 $s.SetOutputToDefaultAudioDevice()`, escapeForPowerShell(outputPath), escapeForPowerShell(v.Name), escapeForPowerShell(v.Desc))
 	}
 	cmd := exec.Command("powershell", "-Command", script)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	if err := cmd.Run(); err != nil {
 		return "", err
 	}
