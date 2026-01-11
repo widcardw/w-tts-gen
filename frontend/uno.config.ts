@@ -3,6 +3,9 @@ import { defineConfig, presetIcons, presetWind3 } from 'unocss'
 export default defineConfig({
   presets: [presetWind3(), presetIcons()],
   theme: {
+    fontFamily: {
+      mono: 'Monaco,Menlo,Consolas,monospace',
+    },
     colors: {
       primary: 'var(--color-primary)',
       'primary-hover': 'var(--color-primary-hover)',

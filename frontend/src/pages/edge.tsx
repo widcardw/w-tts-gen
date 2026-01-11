@@ -169,10 +169,10 @@ function EdgeTts() {
         <div class="flex items-center space-x-4">
           <div class="flex justify-between items-center w-6.5rem">
             <label class="block text-sm font-medium">Rate</label>
-            <code class="text-sm">
+            <span class="text-sm font-mono">
               {es.rate > 0 ? '+' : ''}
               {es.rate}%
-            </code>
+            </span>
           </div>
           <div
             class="i-ri-reset-left-fill text-sm cursor-pointer hover:text-blue"
@@ -192,10 +192,10 @@ function EdgeTts() {
         <div class="flex items-center space-x-4">
           <div class="flex justify-between items-center w-6.5rem">
             <label class="block text-sm font-medium">Volume</label>
-            <code class="text-sm">
+            <span class="text-sm font-mono">
               {es.volume > 0 ? '+' : ''}
               {es.volume}%
-            </code>
+            </span>
           </div>
           <div
             class="i-ri-reset-left-fill text-sm cursor-pointer hover:text-blue"
@@ -215,10 +215,10 @@ function EdgeTts() {
         <div class="flex items-center space-x-4">
           <div class="flex justify-between items-center w-6.5rem">
             <label class="block text-sm font-medium">Pitch</label>
-            <code class="text-sm">
+            <span class="text-sm font-mono">
               {es.pitch > 0 ? '+' : ''}
               {es.pitch}Hz
-            </code>
+            </span>
           </div>
 
           <div
@@ -258,7 +258,7 @@ function EdgeTts() {
       </div>
       <Show when={es.finalAudioPath}>
         <div class="p-3 bg-green/10 text-green text-sm border border-green/30 rounded-md">
-          File saved at <code>{es.finalAudioPath}</code>.{' '}
+          File saved at <span class="font-mono">{es.finalAudioPath}</span>.{' '}
           <a
             onClick={async () => {
               try {

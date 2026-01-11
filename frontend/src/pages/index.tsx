@@ -222,7 +222,7 @@ function Home() {
       </div>
       <Show when={ns.finalAudioPath}>
         <div class="p-3 bg-green/10 text-green text-sm border border-green/30 rounded-md">
-          File saved at <code>{ns.finalAudioPath}</code>.{' '}
+          File saved at <span class="font-mono">{ns.finalAudioPath}</span>.{' '}
           <a
             onClick={async () => {
               try {
