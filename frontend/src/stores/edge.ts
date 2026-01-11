@@ -1,5 +1,5 @@
-import { createStore } from "solid-js/store";
-import { Voice } from "../../bindings/github.com/wujunwei928/edge-tts-go/edge_tts";
+import { createStore } from 'solid-js/store'
+import { Voice } from '../../bindings/github.com/wujunwei928/edge-tts-go/edge_tts'
 
 const [edgeStore, setEdgeStore] = createStore<{
   content: string
@@ -8,9 +8,9 @@ const [edgeStore, setEdgeStore] = createStore<{
   isLoading: boolean
   finalAudioPath: string
   pathState: string
-  voiceInfo: Voice[];
-  locales: string[];
-  selLocale: string;
+  voiceInfo: Voice[]
+  locales: string[]
+  selLocale: string
   selVoiceName: string
   rate: number
   volume: number
@@ -24,11 +24,11 @@ const [edgeStore, setEdgeStore] = createStore<{
   pathState: '',
   voiceInfo: [],
   locales: [],
-  selLocale: "",
+  selLocale: '',
   selVoiceName: '',
   rate: 0,
   volume: 0,
   pitch: 0,
-});
+})
 
-export { edgeStore, setEdgeStore };
+export { edgeStore, setEdgeStore }

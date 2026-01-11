@@ -40,7 +40,7 @@ func TryListeningWindows(v VoiceInfo) error {
 	if v.Name == "" {
 		script = fmt.Sprintf(`Add-Type -AssemblyName System.Speech
 $s = New-Object System.Speech.Synthesis.SpeechSynthesizer
-$s.Speak("%s")`, escapeForPowerShell(v.Desc))
+$s.Speak("%s")`, escapeForPowerShell("Hello, I am the default speaker."))
 	} else {
 		script = fmt.Sprintf(`Add-Type -AssemblyName System.Speech
 $s = New-Object System.Speech.Synthesis.SpeechSynthesizer

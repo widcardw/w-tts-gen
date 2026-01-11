@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { VoiceInfo } from "../../bindings/bridgetts/services/nativeinvocation";
+import { VoiceInfo } from '../../bindings/bridgetts/services/nativeinvocation'
 
 const [nativeStore, setNativeStore] = createStore<{
   content: string
@@ -23,7 +23,7 @@ const [nativeStore, setNativeStore] = createStore<{
   voiceInfo: [],
   voiceLangs: [],
   selLang: '',
-  selSpeaker: ''
+  selSpeaker: '',
 })
 
 class AppConfig {
