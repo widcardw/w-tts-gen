@@ -5,8 +5,13 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-	"syscall"
 )
+
+func createPowerShellCmd(command string) *exec.Cmd {
+	cmd := exec.Command("powershell", "-Command", command)
+	cmd.SysProcAttr = CreateSysAttr()
+	return cmd
+}
 
 func GetWindowsVoiceList() ([]VoiceInfo, error) {
 	psCommand := `
@@ -23,8 +28,7 @@ $speech.GetInstalledVoices() | ForEach-Object {
 }
 ConvertTo-Json -InputObject $voices
 `
-	cmd := exec.Command("powershell", "-Command", psCommand)
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	cmd := createPowerShellCmd(psCommand)
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get voices! %v", err)
@@ -49,8 +53,7 @@ $s = New-Object System.Speech.Synthesis.SpeechSynthesizer
 $s.SelectVoice("%s")
 $s.Speak("%s")`, escapeForPowerShell(v.Name), escapeForPowerShell(v.Desc))
 	}
-	cmd := exec.Command("powershell", "-Command", script)
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	cmd := createPowerShellCmd(script)
 	return cmd.Run()
 }
 
@@ -68,10 +71,9 @@ $s = New-Object System.Speech.Synthesis.SpeechSynthesizer
 $s.SelectVoice("%s")
 $s.SetOutputToWaveFile("%s")
 $s.Speak("%s")
-$s.SetOutputToDefaultAudioDevice()`, escapeForPowerShell(outputPath), escapeForPowerShell(v.Name), escapeForPowerShell(v.Desc))
+$s.SetOutputToDefaultAudioDevice()`, escapeForPowerShell(v.Name), escapeForPowerShell(outputPath), escapeForPowerShell(v.Desc))
 	}
-	cmd := exec.Command("powershell", "-Command", script)
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	cmd := createPowerShellCmd(script)
 	if err := cmd.Run(); err != nil {
 		return "", err
 	}
