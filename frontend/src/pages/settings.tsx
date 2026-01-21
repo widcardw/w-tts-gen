@@ -68,10 +68,7 @@ function Settings() {
     <div class="space-y-6">
       <div>
         <button
-          class={clsx(
-            'block text-white text-sm rounded-md p-2',
-            'bg-blue hover:bg-blue/80'
-          )}
+          class={clsx('block text-white text-sm rounded-md p-2', 'bg-blue hover:bg-blue/80')}
           onClick={openDevTools}
         >
           Open DevTools
@@ -114,7 +111,8 @@ function Settings() {
       </div>
       <div class={clsx('flex justify-between items-center', 'mx-4')}>
         <label>
-          Compress (The generated audio will be converted into <span class="font-mono">aac</span> format.)
+          Compress (The generated audio will be converted into <span class="font-mono">aac</span>{' '}
+          format.)
         </label>
         <input
           type="checkbox"
