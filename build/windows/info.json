@@ -6,9 +6,9 @@
 		"0000": {
 			"ProductVersion": "0.1.0",
 			"CompanyName": "My Company",
-			"FileDescription": "My Product Description",
+			"FileDescription": "W-TTS Description",
 			"LegalCopyright": "© now, My Company",
-			"ProductName": "My Product",
+			"ProductName": "W-TTS",
 			"Comments": "This is a comment"
 		}
 	}

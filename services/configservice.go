@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -24,7 +25,7 @@ func GetPath(path string) string {
 }
 
 func (c *ConfigService) ReadConfig() *AppConfig {
-	configPath := GetPath("data/config.yml")
+	configPath := GetPath("W-TTS/config.yml")
 	b, err := os.ReadFile(configPath)
 	if err == nil {
 		yaml.Unmarshal(b, &Config)
@@ -33,9 +34,12 @@ func (c *ConfigService) ReadConfig() *AppConfig {
 }
 
 func createConfigDir() string {
-	confDir := GetPath("data")
+	confDir := GetPath("W-TTS")
 	if _, err := os.Stat(confDir); err != nil && os.IsNotExist(err) {
+		fmt.Printf("No dir %s, %v", confDir, err)
 		os.MkdirAll(confDir, os.ModePerm)
+	} else if err != nil {
+		fmt.Printf("Error %v", err)
 	}
 	return confDir
 }
@@ -50,7 +54,7 @@ func (c *ConfigService) WriteConfig(conf *AppConfig) (string, error) {
 		return "", err
 	}
 	createConfigDir()
-	confPath := GetPath("data/config.yml")
+	confPath := GetPath("W-TTS/config.yml")
 	if err := os.WriteFile(confPath, yBytes, os.ModePerm); err != nil {
 		log.Printf("Failed to write config to file, %s", err)
 		return "", err
@@ -63,4 +67,14 @@ func (c *ConfigService) OpenConfigDir() error {
 
 	app := application.Get()
 	return app.Env.OpenFileManager(confDir, false)
+}
+
+func (c *ConfigService) OpenDevTools() error {
+	app := application.Get()
+	window := app.Window.Current()
+	if window != nil {
+		window.OpenDevTools()
+		return nil
+	}
+	return fmt.Errorf("Cannot find current Window!")
 }

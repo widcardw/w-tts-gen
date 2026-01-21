@@ -1,6 +1,8 @@
 package services
 
-import "runtime"
+import (
+	"runtime"
+)
 
 type EnvResult struct {
 	IsStartup   bool   `json:"-"`

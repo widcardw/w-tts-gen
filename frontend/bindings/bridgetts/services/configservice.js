@@ -18,6 +18,13 @@ export function OpenConfigDir() {
 }
 
 /**
+ * @returns {$CancellablePromise<void>}
+ */
+export function OpenDevTools() {
+    return $Call.ByID(192167535);
+}
+
+/**
  * @returns {$CancellablePromise<$models.AppConfig | null>}
  */
 export function ReadConfig() {

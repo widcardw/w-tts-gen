@@ -7,9 +7,9 @@
     <key>CFBundleIdentifier</key>
     <string>com.wails.</string>
     <key>CFBundleName</key>
-    <string>My Product</string>
+    <string>W-TTS</string>
     <key>CFBundleDisplayName</key>
-    <string>My Product</string>
+    <string>W-TTS</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

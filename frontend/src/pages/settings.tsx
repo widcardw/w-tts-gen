@@ -43,6 +43,9 @@ function Settings() {
     setConfigChanged(true)
     changeTheme(t)
   }
+  async function openDevTools() {
+    await ConfigService.OpenDevTools()
+  }
 
   async function chooseDefaultPath() {
     try {
@@ -63,6 +66,17 @@ function Settings() {
 
   return (
     <div class="space-y-6">
+      <div>
+        <button
+          class={clsx(
+            'block text-white text-sm rounded-md p-2',
+            'bg-blue hover:bg-blue/80'
+          )}
+          onClick={openDevTools}
+        >
+          Open DevTools
+        </button>
+      </div>
       <div class={clsx('flex justify-between items-center', 'mx-4')}>
         <label>Theme</label>
         <div class="space-x-4 flex items-center">

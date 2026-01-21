@@ -5,6 +5,7 @@ import (
 	"embed"
 	_ "embed"
 	"log"
+	"os"
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -29,6 +30,10 @@ func init() {
 // and starts a goroutine that emits a time-based event every second. It subsequently runs the application and
 // logs any error that might occur.
 func main() {
+	
+	if configPath, err := os.UserConfigDir(); err == nil {
+		services.Env.BasePath = configPath
+	}
 
 	// Create a new Wails application by providing the necessary options.
 	// Variables 'Name' and 'Description' are for application metadata.
@@ -66,8 +71,8 @@ func main() {
 		},
 		BackgroundColour: application.NewRGB(27, 38, 54),
 		URL:              "/",
-		MinWidth: 800,
-		MinHeight: 600,
+		MinWidth:         800,
+		MinHeight:        600,
 	})
 
 	// Create a goroutine that emits an event containing the current time every second.
