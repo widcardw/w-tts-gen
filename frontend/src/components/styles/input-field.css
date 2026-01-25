@@ -4,6 +4,7 @@
 
 [data-scope='field'][data-part='label'] {
   --at-apply: text-sm;
+  font-weight: 300;
 }
 
 [data-scope='field'][data-part='input'],
@@ -19,6 +20,7 @@
 [data-scope='field'][data-part='textarea'] {
   resize: vertical;
   min-height: 5rem;
+  --at-apply: font-sans font-light;
 }
 
 [data-scope='field'][data-part='input']:focus,
@@ -28,4 +30,5 @@
 
 [data-scope='field'][data-part='helper-text'] {
   --at-apply: text-sm text-mut-foreground;
+  font-weight: 300;
 }

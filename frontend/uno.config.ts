@@ -5,7 +5,8 @@ export default defineConfig({
   transformers: [transformerDirectives()],
   theme: {
     fontFamily: {
-      mono: 'Monaco,Menlo,Consolas,monospace',
+      mono: 'var(--font-mono)',
+      sans: 'var(--font-sans)',
     },
     colors: {
       primary: {

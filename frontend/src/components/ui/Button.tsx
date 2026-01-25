@@ -38,7 +38,7 @@ const Button: Component<{
   return (
     <button
       disabled={p.disabled}
-      class={clsx(commonClass, VariantClasses[p.variant], SizeClasses[p.size])}
+      class={clsx(commonClass, VariantClasses[p.variant], SizeClasses[p.size], "font-sans")}
       onClick={p.onClick}
     >
       {p.children}

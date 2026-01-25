@@ -16,26 +16,26 @@
 }*/
 [data-scope='select'][data-part='trigger'] {
   border: 1px solid;
-  --at-apply: border-border rounded bg-transparent w-full text-text;
+  --at-apply: border-border rounded bg-transparent w-full text-text font-sans;
   --at-apply: inline-flex justify-between cursor-pointer items-center gap-2 p-inline-3 h-10 text-1rem;
 }
-[data-scope='select'][data-part='value-text'] {
-}
+/* [data-scope='select'][data-part='value-text'] {
+} */
 [data-scope='select'][data-part='positioner'] {
   --at-apply: bg-bg rounded shadow-xl;
 }
 [data-scope='select'][data-part='content'] {
   --at-apply: p-1 gap-1 max-h-300px of-y-auto z-999;
 }
-[data-scope='select'][data-part='item-group'] {
+/* [data-scope='select'][data-part='item-group'] {
 }
 [data-scope='select'][data-part='item-group-label'] {
-}
+} */
 [data-scope='select'][data-part='item'] {
   --at-apply: rounded hover: bg-primary: 10 p-inline-2 leading-1.5rem h-10 cursor-pointer;
   --at-apply: flex justify-between items-center;
 }
-[data-scope='select'][data-part='item-text'] {
+/* [data-scope='select'][data-part='item-text'] {
 }
 [data-scope='select'][data-part='item-indicator'][data-state='checked'] {
-}
+} */

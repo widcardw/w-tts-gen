@@ -10,7 +10,7 @@
 
 [data-scope="tabs"][data-part="trigger"] {
     --at-apply: min-w-10 h-10 p-inline-3 bg-transparent text-1rem
-        text-mut-foreground;
+        text-mut-foreground font-sans;
 }
 
 [data-scope="tabs"][data-part="indicator"] {
