@@ -1,96 +1,95 @@
-# W-TTS-Gen - 跨平台语音合成应用
+# W-TTS-Gen - Cross-platform Text-to-Speech Application
 
-一个基于 Wails3 + Go + SolidJS 开发的跨平台语音合成应用，支持在 Windows、macOS 和 Linux 系统上生成音频文件。
+A cross-platform text-to-speech application built with Wails3 + Go + SolidJS, supporting audio file generation on Windows and macOS (Linux support is not tested yet).
 
-## ✨ 功能特性
+## Tech Stack
 
-- 🎤 **语音合成**：将文本转换为音频文件
-- 🌐 **跨平台支持**：支持 Windows、macOS 和 Linux 系统
-- 📁 **自定义输出路径**：选择音频文件的保存位置
-- 🎨 **现代化 UI**：基于 SolidJS 和 UnoCSS 的简洁界面
-- 📱 **响应式设计**：适配不同屏幕尺寸
+### Backend
+- **Go**
+- **Wails3** (Cross-platform desktop application framework)
 
-## 🛠️ 技术栈
+### Frontend
+- **SolidJS** with [ark-ui](https://ark-ui.com/)
+- **TypeScript**
+- **UnoCSS** (Atomic CSS framework)
+- **Iconify (Remix Icons)**
 
-### 后端
-- **Go**：高性能后端开发语言
-- **Wails3**：跨平台桌面应用框架
+## Quick Start (Dev)
 
-### 前端
-- **SolidJS**：高性能 JavaScript 框架
-- **TypeScript**：类型安全的 JavaScript 超集
-- **UnoCSS**：原子化 CSS 框架
-- **Iconify (Remix Icons)**：丰富的图标库
+### Prerequisites
 
-## 🚀 快速开始 (Dev)
+- Go 1.20+ (recommended)
+- Node.js 18+ (recommended)
+- Wails3 CLI (installation instructions below)
 
-### 前提条件
-
-- Go 1.20+（推荐）
-- Node.js 18+（推荐）
-- Wails3 CLI（安装方法见下文）
-
-### 安装 Wails3 CLI
+### Install Wails3 CLI
 
 ```bash
-# 使用 Go 安装 Wails3 CLI
+# Install Wails3 CLI using Go
 go install github.com/wailsapp/wails/v3/cmd/wails3@latest
 ```
 
-### 开发模式
+### Development Mode
 
-1. 克隆项目到本地
+1. Clone the project locally:
 
-2. 安装前端依赖：
+```bash
+gh repo clone widcardw/w-tts-gen
+cd w-tts-gen
+```
+
+2. Install frontend dependencies:
 
 ```bash
 cd frontend
 pnpm install
 ```
 
-3. 返回项目根目录，启动开发服务器：
+3. Return to the project root directory and start the development server:
 
 ```bash
 wails3 dev
 ```
 
-这将启动应用并启用热重载功能，支持前端和后端代码的实时更新。
-
-### 生产构建
+### Production Build
 
 ```bash
 wails3 build
 ```
 
-构建完成后，可执行文件将生成在 `build` 目录中。
+After building, the executable will be generated in the `build` directory.
 
-## 📦 项目结构
+For distribution, you can use `wails3 package` to create installers for different platforms.
+
+> On Windows, you should install [NSIS](https://nsis.sourceforge.io/) to create installers in `msi` format.
+
+## Project Structure
 
 ```
-├── frontend/             # 前端代码目录
-│   ├── src/              # 源代码
-│   │   ├── components/   # 组件
-│   │   ├── pages/        # 页面
-│   │   ├── styles/       # 样式文件
-│   │   └── index.tsx     # 前端入口
-│   ├── public/           # 静态资源
-│   ├── package.json      # 前端依赖
-│   └── vite.config.ts    # Vite 配置
-├── services/             # Go 服务
-├── main.go               # Go 后端入口
-├── go.mod                # Go 依赖
-└── README.md             # 项目说明文档
+├── frontend/             # Frontend code directory
+│   ├── src/              # Source code
+│   │   ├── components/   # Components
+│   │   ├── pages/        # Pages
+│   │   ├── styles/       # Style files
+│   │   └── index.tsx     # Frontend entry
+│   ├── public/           # Static resources
+│   ├── package.json      # Frontend dependencies
+│   └── vite.config.ts    # Vite configuration
+├── services/             # Go services
+├── main.go               # Go backend entry
+├── go.mod                # Go dependencies
+└── README.md             # Project documentation
 ```
 
-## 📖 使用说明
+## Usage
 
-> Linux 用户需要预先安装 `espeak` 语音合成引擎。
+> Linux users need to pre-install the `espeak` speech synthesis engine.
 
-1. 在文本框中输入要转换的文字
-2. 点击「Choose」按钮选择音频文件的保存路径
-3. 点击「Generate」按钮生成音频文件
-4. 生成完成后，音频文件将保存在指定路径
+1. Enter the text to convert in the text box
+2. Click the "Choose" button to select the audio file save path
+3. Click the "Generate" button to generate the audio file
+4. After generation, the audio file will be saved to the specified path
 
-## 📄 许可证
+## License
 
 MIT License
