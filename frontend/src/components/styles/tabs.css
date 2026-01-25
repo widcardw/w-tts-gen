@@ -1,0 +1,28 @@
+[data-scope="tabs"][data-part="root"] {
+    --at-apply: flex flex-col w-full;
+}
+
+[data-scope="tabs"][data-part="list"] {
+    --at-apply: flex gap-4 relative;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+[data-scope="tabs"][data-part="trigger"] {
+    --at-apply: min-w-10 h-10 p-inline-3 bg-transparent text-1rem
+        text-mut-foreground;
+}
+
+[data-scope="tabs"][data-part="indicator"] {
+    --at-apply: bg-primary h-2px;
+    width: var(--width);
+    bottom: 0;
+}
+
+[data-scope="tabs"][data-part="trigger"][data-selected] {
+    --at-apply: min-w-10 h-10 p-inline-3 text-text;
+}
+
+[data-scope="tabs"][data-part="content"] {
+    --at-apply: pt-4;
+}

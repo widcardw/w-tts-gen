@@ -7,16 +7,29 @@ import {
   AppConfig,
   configStore,
   setNativeStore,
-} from '../stores/app'
-import { createSignal, Show } from 'solid-js'
-import { ConfigService } from '../../bindings/bridgetts/services'
-import { changeTheme } from '../utils/theme'
+} from '~/stores/app'
+import { createSignal, For, Show } from 'solid-js'
+import { ConfigService } from '#/bridgetts/services'
+import { changeTheme } from '~/utils/theme'
 import { Dialogs } from '@wailsio/runtime'
+import { Button } from '~/components/ui/Button'
+import { Field, RadioGroup, Checkbox } from '@ark-ui/solid'
+
+import '~/components/styles/input-field.css'
+import '~/components/styles/radio-group.css'
+import '~/components/styles/checkbox.css'
 
 function Settings() {
   const [configSavedMsg, setConfigSavedMsg] = createSignal('')
   const [configSaveErrorMsg, setConfigSaveErrorMsg] = createSignal('')
   const [isLoading, setLoading] = createSignal(false)
+
+  function hideMessageAfterDelay() {
+    setTimeout(() => {
+      setConfigSavedMsg('')
+      setConfigSaveErrorMsg('')
+    }, 10000)
+  }
 
   async function tryToSaveConfig() {
     setLoading(true)
@@ -31,12 +44,16 @@ function Settings() {
       setConfigSavedMsg('Successfully saved at ' + msg)
       setConfigChanged(false)
       setNativeStore('outputPath', configStore.defaultSaveDir)
+      hideMessageAfterDelay()
     } catch (e) {
       setConfigSaveErrorMsg('Failed to save config! ' + String(e))
+      hideMessageAfterDelay()
     } finally {
       setLoading(false)
     }
   }
+
+  const themeChoices = ['auto', 'light', 'dark']
 
   function handleThemeChange(t: 'auto' | 'light' | 'dark') {
     setConfigStore('theme', t)
@@ -61,106 +78,97 @@ function Settings() {
       }
     } catch (e) {
       setConfigSaveErrorMsg('Failed to select path! ' + String(e))
+      hideMessageAfterDelay()
     }
   }
 
   return (
-    <div class="space-y-6">
+    <div class="space-y-6 mx-auto">
       <div>
-        <button
-          class={clsx('block text-white text-sm rounded-md p-2', 'bg-blue hover:bg-blue/80')}
-          onClick={openDevTools}
-        >
-          Open DevTools
-        </button>
+        <Button onClick={openDevTools}>Open DevTools</Button>
       </div>
-      <div class={clsx('flex justify-between items-center', 'mx-4')}>
-        <label>Theme</label>
-        <div class="space-x-4 flex items-center">
-          <div class="space-x-1 flex items-center">
-            <input
-              type="radio"
-              id="theme-auto"
-              name="theme"
-              checked={cs.theme === 'auto'}
-              onClick={() => handleThemeChange('auto')}
-            />
-            <label for="theme-auto">Auto</label>
-          </div>
-          <div class="space-x-1 flex items-center">
-            <input
-              type="radio"
-              id="theme-light"
-              name="theme"
-              checked={cs.theme === 'light'}
-              onClick={() => handleThemeChange('light')}
-            />
-            <label for="theme-light">Light</label>
-          </div>
-          <div class="space-x-1 flex items-center">
-            <input
-              type="radio"
-              id="theme-dark"
-              name="theme"
-              checked={cs.theme === 'dark'}
-              onClick={() => handleThemeChange('dark')}
-            />
-            <label for="theme-dark">Dark</label>
-          </div>
-        </div>
-      </div>
-      <div class={clsx('flex justify-between items-center', 'mx-4')}>
-        <label>
+      <RadioGroup.Root
+        class="w-full"
+        value={cs.theme}
+        onValueChange={(v) => handleThemeChange(v.value as 'auto' | 'light' | 'dark')}
+      >
+        <RadioGroup.Label class="flex-1">Theme</RadioGroup.Label>
+        <RadioGroup.Indicator />
+        <For each={themeChoices}>
+          {(it) => (
+            <RadioGroup.Item value={it}>
+              <RadioGroup.ItemControl />
+              <RadioGroup.ItemHiddenInput />
+              <RadioGroup.ItemText>{it}</RadioGroup.ItemText>
+            </RadioGroup.Item>
+          )}
+        </For>
+      </RadioGroup.Root>
+      <Checkbox.Root
+        class="w-full"
+        checked={cs.compress}
+        onCheckedChange={(e) => {
+          setConfigChanged(true)
+          setConfigStore('compress', Boolean(e.checked))
+        }}
+      >
+        <Checkbox.Label class="flex-1">
           Compress (The generated audio will be converted into <span class="font-mono">aac</span>{' '}
           format.)
-        </label>
-        <input
-          type="checkbox"
-          checked={cs.compress}
-          onChange={(v) => {
-            setConfigChanged(true)
-            setConfigStore('compress', Boolean(v.target.checked))
-          }}
-        />
-      </div>
-      <div class={clsx('flex justify-between items-center space-x-4', 'mx-4')}>
-        <label>Default Save Path</label>
+        </Checkbox.Label>
+        <Checkbox.Control>
+          <Checkbox.Indicator>
+            <Show when={cs.compress}>
+              <div class="i-ri-check-line text-white" />
+            </Show>
+          </Checkbox.Indicator>
+        </Checkbox.Control>
+        <Checkbox.HiddenInput />
+      </Checkbox.Root>
+      <Field.Root>
+        <Field.Label>Default Save Path</Field.Label>
+        <div class="flex gap-4 w-full">
+          <Field.Input
+            class="font-mono text-sm flex-1"
+            value={cs.defaultSaveDir}
+            onInput={(v) => {
+              setConfigChanged(true)
+              setConfigStore('defaultSaveDir', v.target.value)
+            }}
+          />
+          <Button onClick={chooseDefaultPath}>Choose</Button>
+        </div>
+        <Field.HelperText>The default path to save your audios</Field.HelperText>
+      </Field.Root>
+      {/*<label>Default Save Path</label>
         <input
           class={clsx(
-            'block flex-1 p-2 bg-input-bg',
-            'focus:border-blue focus:ring-2 focus:ring-blue/30 rounded-md text-sm font-mono',
+            "block flex-1 p-2 bg-input-bg",
+            "focus:border-blue focus:ring-2 focus:ring-blue/30 rounded-md text-sm font-mono",
           )}
           value={cs.defaultSaveDir}
           onInput={(v) => {
-            setConfigChanged(true)
-            setConfigStore('defaultSaveDir', v.target.value)
+            setConfigChanged(true);
+            setConfigStore("defaultSaveDir", v.target.value);
           }}
-        />
-        <button
-          aria-label="choose-output-btn"
-          class="bg-blue p-2 hover:bg-blue/80 text-white text-sm rounded-md"
-          onClick={chooseDefaultPath}
+        />*/}
+
+      <div class={clsx('flex justify-end items-center space-x-4')}>
+        <Button
+          disabled={isLoading()}
+          variant={configChanged() ? 'default' : 'secondary'}
+          onClick={tryToSaveConfig}
         >
-          Choose
-        </button>
+          Save
+        </Button>
       </div>
-      <div class={clsx('flex justify-end items-center mx-4 space-x-4')}>
+      <div class="space-y-2">
         <Show when={configSavedMsg()}>
           <div class="bg-green/10 text-green p-2 rounded text-sm">{configSavedMsg()}</div>
         </Show>
         <Show when={configSaveErrorMsg()}>
-          <div class="bg-red/10 text-red p-2 rounded text-sm">{configSavedMsg()}</div>
+          <div class="bg-red/10 text-red p-2 rounded text-sm">{configSaveErrorMsg()}</div>
         </Show>
-        <button
-          disabled={isLoading()}
-          class={clsx(
-            'block text-white text-sm rounded-md p-2',
-            configChanged() ? 'bg-blue hover:bg-blue/80' : 'bg-gray hover:bg-gray/80',
-          )}
-          onClick={tryToSaveConfig}
-        >
-          Save
-        </button>
       </div>
     </div>
   )

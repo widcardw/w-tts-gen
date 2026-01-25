@@ -1,0 +1,23 @@
+[data-scope='checkbox'][data-part='root'] {
+  align-items: center;
+  display: flex;
+  --at-apply: gap-3;
+}
+
+[data-scope='checkbox'][data-part='control'] {
+  --at-apply: w-5 h-5;
+  --at-apply: rounded;
+  --at-apply: flex items-center justify-center;
+  border: 1px solid;
+  cursor: pointer;
+}
+
+[data-scope='checkbox'][data-part='control'][data-state='unchecked'] {
+  --at-apply: bg-transparent;
+  --at-apply: border-border;
+}
+
+[data-scope='checkbox'][data-part='control'][data-state='checked'] {
+  --at-apply: bg-primary;
+  --at-apply: border-primary;
+}

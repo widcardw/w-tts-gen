@@ -1,7 +1,7 @@
 import { Component, createSignal, For, onMount } from 'solid-js'
 import { useLocation } from '@solidjs/router'
 import clsx from 'clsx'
-import { OsService } from '../../bindings/bridgetts/services'
+import { OsService } from '#/bridgetts/services'
 
 const Layout: Component<{ children: any }> = (props) => {
   const location = useLocation()
@@ -19,7 +19,7 @@ const Layout: Component<{ children: any }> = (props) => {
   })
 
   return (
-    <div class="min-h-screen bg-bg flex flex-col">
+    <div class="min-h-screen w-full bg-bg flex flex-col">
       <header class="border-b border-b-solid border-border bg-bg" style="position: sticky; top:0">
         <nav class="px-4">
           <div class={clsx('flex', goos() === 'darwin' && 'ml-60px')}>
@@ -33,8 +33,8 @@ const Layout: Component<{ children: any }> = (props) => {
                     'px-4 py-2 rounded-t-md text-sm font-medium',
                     'border-b-2 border-b-solid border-t-2 border-t-solid border-t-transparent',
                     location.pathname === tab.path
-                      ? 'bg-bg-alt text-primary border-primary'
-                      : 'text-text-muted hover:text-primary border-transparent',
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-text hover:text-primary/80',
                   )}
                 >
                   <div class={tab.icon} />

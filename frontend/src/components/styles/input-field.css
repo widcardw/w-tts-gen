@@ -1,0 +1,31 @@
+[data-scope='field'][data-part='root'] {
+  --at-apply: flex flex-col gap-1.5;
+}
+
+[data-scope='field'][data-part='label'] {
+  --at-apply: text-sm;
+}
+
+[data-scope='field'][data-part='input'],
+[data-scope='field'][data-part='textarea'] {
+  --at-apply: bg-transparent border-border border-1px border-solid rounded outline-none p-inline-3
+    min-w-2.5rem text-text line-height-6;
+}
+
+[data-scope='field'][data-part='input'] {
+  --at-apply: h-2.5rem;
+}
+
+[data-scope='field'][data-part='textarea'] {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+[data-scope='field'][data-part='input']:focus,
+[data-scope='field'][data-part='textarea']:focus {
+  --at-apply: border-primary;
+}
+
+[data-scope='field'][data-part='helper-text'] {
+  --at-apply: text-sm text-mut-foreground;
+}

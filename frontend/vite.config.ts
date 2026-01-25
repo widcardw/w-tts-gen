@@ -3,6 +3,7 @@ import solid from 'vite-plugin-solid'
 import wails from '@wailsio/runtime/plugins/vite'
 import Pages from 'vite-plugin-pages'
 import UnoCSS from 'unocss/vite'
+import path from 'path'
 
 export default defineConfig({
   plugins: [
@@ -10,13 +11,13 @@ export default defineConfig({
     Pages({
       dirs: ['src/pages'],
     }),
-    solid(),
     UnoCSS(),
+    solid(),
   ],
   resolve: {
     alias: {
-      '~': new URL('src', import.meta.url).href,
-      '#': new URL('bindings', import.meta.url).href,
+      '~': path.resolve(__dirname, 'src'),
+      '#': path.resolve(__dirname, 'bindings'),
     },
   },
 })

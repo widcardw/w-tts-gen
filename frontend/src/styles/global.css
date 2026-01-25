@@ -20,35 +20,35 @@
 
   /* 颜色变量 */
   --color-primary: #3b82f6;
-  --color-primary-hover: #2563eb;
-  --color-secondary: #6b7280;
-  --color-secondary-hover: #4b5563;
+  --color-primary-foreground: white;
+  --color-secondary: #4b62a0;
+  --color-secondary-foreground: white;
   --color-mut: #1f2937;
-  --color-mut-hover: #374151;
+  --color-mut-foreground: #999999;
   --color-destructive: #ef4444;
-  --color-destructive-hover: #dc2626;
+  --color-destructive-foreground: white;
 
   /* 背景和文本颜色 */
-  --color-bg: rgba(27, 38, 54, 1);
-  --color-bg-alt: rgba(30, 41, 59, 1);
+  --color-bg: rgba(40, 41, 45, 1);
+  --color-bg-alt: rgba(46, 47, 50, 1);
   --color-text: rgba(255, 255, 255, 0.87);
   --color-text-muted: rgba(255, 255, 255, 0.6);
-  --color-border: rgba(75, 85, 99, 1);
+  --color-border: rgba(75, 76, 80, 1);
 
   /* 输入框颜色 */
-  --color-input-bg: rgba(51, 65, 85, 1);
+  --color-input-bg: rgba(51, 52, 56, 1);
   --color-input-text: rgba(255, 255, 255, 0.87);
-  --color-input-border: rgba(75, 85, 99, 1);
+  --color-input-border: rgba(75, 76, 80, 1);
 
   /* 按钮颜色 */
-  --color-btn-primary: var(--color-primary);
+  /*--color-btn-primary: var(--color-primary);
   --color-btn-primary-hover: var(--color-primary-hover);
   --color-btn-secondary: var(--color-secondary);
   --color-btn-secondary-hover: var(--color-secondary-hover);
   --color-btn-muted: var(--color-mut);
   --color-btn-muted-hover: var(--color-mut-hover);
   --color-btn-destructive: var(--color-destructive);
-  --color-btn-destructive-hover: var(--color-destructive-hover);
+  --color-btn-destructive-hover: var(--color-destructive-hover);*/
 
   /* 其他设置 */
   font-synthesis: none;
@@ -88,70 +88,37 @@ body {
 /* 链接样式 */
 a {
   font-weight: 500;
-  color: var(--color-primary);
+  /*color: var(--color-primary);*/
   text-decoration: inherit;
 }
 
-a:hover {
+/*a:hover {
   color: var(--color-primary-hover);
-}
+}*/
 
 /* 按钮样式 */
 button {
   cursor: pointer;
   border: none;
-  border-radius: 3px;
+  /*border-radius: 3px;
   padding: 0.5rem;
   font-weight: 500;
-  color: white;
-}
-
-/* 按钮变体 */
-.btn-primary {
-  background-color: var(--color-btn-primary);
-}
-
-.btn-primary:hover {
-  background-color: var(--color-btn-primary-hover);
-}
-
-.btn-secondary {
-  background-color: var(--color-btn-secondary);
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-btn-secondary-hover);
-}
-
-.btn-muted {
-  background-color: var(--color-btn-muted);
-}
-
-.btn-muted:hover {
-  background-color: var(--color-btn-muted-hover);
-}
-
-.btn-destructive {
-  background-color: var(--color-btn-destructive);
-}
-
-.btn-destructive:hover {
-  background-color: var(--color-btn-destructive-hover);
+  color: white;*/
 }
 
 /* 输入框和文本域样式 */
-input,
+/*input,
 textarea {
   border: 1px solid var(--color-input-border);
   border-radius: 3px;
   outline: none;
   font-family: inherit;
   /*padding: 0.5rem 1rem;*/
-  background-color: var(--color-input-bg);
+/*background-color: var(--color-input-bg);
   color: var(--color-input-text);
-}
+}*/
 
-input:focus,
+/*input:focus,
 textarea:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
@@ -160,7 +127,7 @@ textarea:focus {
 input:hover,
 textarea:hover {
   border-color: var(--color-primary);
-}
+}*/
 
 /* 表单容器 */
 .input-box {

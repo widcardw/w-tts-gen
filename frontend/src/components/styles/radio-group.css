@@ -1,0 +1,23 @@
+[data-scope='radio-group'][data-part='root'] {
+  --at-apply: flex gap-4;
+}
+
+[data-scope='radio-group'][data-part='item'] {
+  --at-apply: flex gap-3 items-center cursor-pointer;
+}
+
+[data-scope='radio-group'][data-part='item-control'] {
+  --at-apply: bg-transparent w-5 h-5;
+  --at-apply: rounded-full;
+  border: 1px solid var(--color-border);
+}
+
+[data-scope='radio-group'][data-part='item-control'][data-state='checked'] {
+  outline-width: 4px;
+  outline-offset: -5px;
+  outline-color: var(--color-bg);
+  outline-style: solid;
+  --at-apply: h-5 w-5;
+  --at-apply: bg-primary border-primary;
+  --at-apply: rounded-full;
+}

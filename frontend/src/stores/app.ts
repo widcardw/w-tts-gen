@@ -11,8 +11,10 @@ const [nativeStore, setNativeStore] = createStore<{
   pathState: string
   voiceInfo: VoiceInfo[]
   voiceLangs: string[]
+  selCate: string
   selLang: string
   selSpeaker: string
+  isListening: boolean
 }>({
   content: '',
   outputPath: '',
@@ -22,8 +24,10 @@ const [nativeStore, setNativeStore] = createStore<{
   pathState: '',
   voiceInfo: [],
   voiceLangs: [],
+  selCate: 'default',
   selLang: '',
   selSpeaker: '',
+  isListening: false,
 })
 
 class AppConfig {

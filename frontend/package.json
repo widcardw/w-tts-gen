@@ -14,12 +14,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ark-ui/solid": "^5.30.0",
     "@wailsio/runtime": "latest",
     "solid-js": "^1.9.10"
   },
   "devDependencies": {
     "@iconify-json/ri": "^1.2.7",
     "@solidjs/router": "^0.15.4",
+    "@tanstack/solid-virtual": "^3.13.18",
+    "@types/node": "^25.0.10",
     "clsx": "^2.1.1",
     "oxfmt": "^0.23.0",
     "oxlint": "^1.38.0",

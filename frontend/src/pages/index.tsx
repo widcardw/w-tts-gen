@@ -1,34 +1,46 @@
-import { For, Show, createMemo, onMount } from 'solid-js'
-import { Dialogs } from '@wailsio/runtime'
-import clsx from 'clsx'
+import { Show, createMemo, onMount } from "solid-js";
+import { Dialogs } from "@wailsio/runtime";
 
-import { nativeStore as ns, setNativeStore } from '../stores/app'
-import { NativeTts, OsService } from '../../bindings/bridgetts/services'
-import { VoiceInfo } from '../../bindings/bridgetts/services/nativeinvocation'
+import { nativeStore as ns, setNativeStore } from "~/stores/app";
+import { NativeTts, OsService } from "#/bridgetts/services";
+import { VoiceInfo } from "#/bridgetts/services/nativeinvocation";
+import { Button } from "~/components/ui/Button";
+import { Field, Tabs } from "@ark-ui/solid";
+
+import "~/components/styles/input-field.css";
+import "~/components/styles/radio-group.css";
+import "~/components/styles/tabs.css";
+import { Selector } from "~/components/ui/Selector";
 
 function Home() {
   async function getVoices() {
     try {
-      setNativeStore('isLoading', true)
-      const voices: Array<VoiceInfo> = await NativeTts.GetVoices()
-      setNativeStore('voiceInfo', voices)
-      setNativeStore('voiceLangs', Array.from(new Set(voices.map((i) => i.lang))))
+      setNativeStore("isLoading", true);
+      const voices: Array<VoiceInfo> = await NativeTts.GetVoices();
+      setNativeStore("voiceInfo", voices);
+      setNativeStore(
+        "voiceLangs",
+        Array.from(new Set(voices.map((i) => i.lang))).sort(),
+      );
     } catch (e) {
-      setNativeStore('errMsg', String(e))
+      setNativeStore("errMsg", String(e));
     } finally {
-      setNativeStore('isLoading', false)
+      setNativeStore("isLoading", false);
     }
   }
 
   const selectedVoice = createMemo(() => {
-    return ns.voiceInfo.find((i) => i.lang === ns.selLang && i.name === ns.selSpeaker)
-  })
+    if (ns.selCate === "default") return undefined;
+    return ns.voiceInfo.find(
+      (i) => i.lang === ns.selLang && i.name === ns.selSpeaker,
+    );
+  });
 
   onMount(async () => {
     if (ns.voiceInfo.length === 0) {
-      await getVoices()
+      await getVoices();
     }
-  })
+  });
 
   async function ChooseOutputDialog() {
     try {
@@ -36,170 +48,177 @@ function Home() {
         AllowsMultipleSelection: false,
         CanChooseDirectories: true,
         CanChooseFiles: true,
-        Title: 'Choose Output Path/Directory',
-      })
+        Title: "Choose Output Path/Directory",
+      });
       if (selectedPath) {
-        setNativeStore('outputPath', selectedPath)
+        setNativeStore("outputPath", selectedPath);
       }
     } catch (err) {
-      console.error('Error selecting file:', err)
-      setNativeStore('outputPath', '')
-      setNativeStore('errMsg', err)
+      console.error("Error selecting file:", err);
+      setNativeStore("outputPath", "");
+      setNativeStore("errMsg", err);
     }
-    await checkPathStat()
+    await checkPathStat();
   }
 
   async function generateTtsNative() {
-    if (ns.content.trim() === '' || ns.outputPath === '') {
-      return
+    if (ns.content.trim() === "" || ns.outputPath === "") {
+      return;
     }
     try {
-      setNativeStore('isLoading', true)
-      const audioPath = await NativeTts.GenerateSpeech(selectedVoice(), ns.content, ns.outputPath)
-      setNativeStore('finalAudioPath', audioPath)
+      setNativeStore("isLoading", true);
+      const audioPath = await NativeTts.GenerateSpeech(
+        selectedVoice(),
+        ns.content,
+        ns.outputPath,
+      );
+      setNativeStore("finalAudioPath", audioPath);
     } catch (err) {
-      setNativeStore('errMsg', err)
+      setNativeStore("errMsg", err);
     } finally {
-      setNativeStore('isLoading', false)
+      setNativeStore("isLoading", false);
     }
   }
 
   async function checkPathStat() {
-    if (ns.outputPath.trim() == '') {
-      setNativeStore('pathState', '')
-      return
+    if (ns.outputPath.trim() == "") {
+      setNativeStore("pathState", "");
+      return;
     }
-    const stat = await OsService.PathStat(ns.outputPath)
+    const stat = await OsService.PathStat(ns.outputPath);
     switch (stat) {
-      case 'file': {
-        setNativeStore('pathState', 'Selected a file. Generating TTS will overwrite the file.')
-        break
+      case "file": {
+        setNativeStore(
+          "pathState",
+          "Selected a file. Generating TTS will overwrite the file.",
+        );
+        break;
       }
-      case 'dir': {
-        setNativeStore('pathState', 'Selected a folder. The TTS file will be put in the folder.')
-        break
+      case "dir": {
+        setNativeStore(
+          "pathState",
+          "Selected a folder. The TTS file will be put in the folder.",
+        );
+        break;
       }
-      case 'empty': {
-        setNativeStore('pathState', 'No folder/path Selected.')
-        break
+      case "empty": {
+        setNativeStore("pathState", "No folder/path Selected.");
+        break;
       }
-      case 'non-exist': {
-        setNativeStore('pathState', 'The folder does not exist. It will be created automatically.')
-        break
+      case "non-exist": {
+        setNativeStore(
+          "pathState",
+          "The folder does not exist. It will be created automatically.",
+        );
+        break;
       }
       default: {
-        setNativeStore('pathState', `Caught error: ${stat}`)
+        setNativeStore("pathState", `Caught error: ${stat}`);
       }
+    }
+  }
+
+  async function tryListening() {
+    try {
+      setNativeStore("isListening", true);
+      await NativeTts.TryListening(selectedVoice());
+    } catch (e) {
+      setNativeStore("errMsg", String(e));
+    } finally {
+      setNativeStore("isListening", false);
     }
   }
 
   return (
     <div class="space-y-6 mx-auto">
-      <div>
-        <label for="content" class="block text-sm font-medium">
-          TTS Content
-        </label>
-        <textarea
-          id="content"
-          value={ns.content}
-          onInput={(e) => setNativeStore('content', e.target.value)}
+      <Field.Root>
+        <Field.Label>TTS Content</Field.Label>
+        <Field.Textarea
+          class="text-1rem py-1"
           autocomplete="false"
-          class={clsx(
-            'w-full h-48 min-h-3rem max-h-20rem px-4 py-2 border border-border rounded-md text-sm',
-            'bg-input-bg resize-y focus:border-blue focus:ring-2 focus:ring-blue/30',
-          )}
+          value={ns.content}
+          onInput={(e) => setNativeStore("content", e.target.value)}
           placeholder="Please input the text to synthesize..."
-        ></textarea>
-      </div>
+        />
+      </Field.Root>
 
-      <div>
-        <label for="output-path" class="block text-sm font-medium">
-          Output Path/Directory
-        </label>
-        <div class="flex items-center space-x-2">
-          <input
-            id="output-path"
-            aria-label="outputPath"
-            class={clsx(
-              'block flex-1 p-2 bg-input-bg',
-              'focus:border-blue focus:ring-2 focus:ring-blue/30',
-              'rounded-md text-sm font-mono',
-            )}
+      <Field.Root>
+        <Field.Label>Output Path/Directory</Field.Label>
+        <div class="flex w-full gap-4">
+          <Field.Input
+            class="font-mono text-sm flex-1"
             value={ns.outputPath}
-            onInput={(e) => setNativeStore('outputPath', e.target.value)}
+            onInput={(e) => setNativeStore("outputPath", e.target.value)}
             onBlur={checkPathStat}
           />
-          <button
-            aria-label="choose-output-btn"
-            class="bg-blue p-2 hover:bg-blue/80 text-white text-sm rounded-md"
-            onClick={ChooseOutputDialog}
-          >
-            Choose
-          </button>
+          <Button onClick={ChooseOutputDialog}>Choose</Button>
         </div>
-        <label class="block text-0.75rem font-light text-text">
-          {ns.pathState === '' && ns.outputPath.trim() === ''
-            ? 'No folder selected.'
+        <Field.HelperText>
+          {ns.pathState === "" && ns.outputPath.trim() === ""
+            ? "No folder selected."
             : ns.pathState}
-        </label>
-      </div>
+        </Field.HelperText>
+      </Field.Root>
 
-      <div>
-        <label for="speaker" class="block text-sm font-medium">
-          Speaker
-        </label>
-        <div class="flex items-center space-x-6">
-          <div class="space-x-1 flex items-center">
-            <input
-              type="radio"
-              id="speaker-default"
-              name="speaker"
-              checked={ns.selSpeaker === '' && ns.selLang === ''}
-              onClick={() => {
-                setNativeStore(['selLang', 'selSpeaker'], '')
-              }}
-            />
-            <label for="speaker-default">Default</label>
-          </div>
-          <div class="space-x-1 flex items-center">
-            <input
-              type="radio"
-              id="speaker-manual"
-              name="speaker"
-              checked={ns.selSpeaker !== '' || ns.selLang !== ''}
-            />
-            <label for="speaker-manual">Manual Select</label>
-            <Show when={ns.voiceInfo}>
-              <div class="flex items-center space-x-4">
-                <select
-                  name="language"
-                  class="text-sm text-text bg-bg"
-                  value={ns.selLang}
-                  onChange={(v) => setNativeStore('selLang', v.target.value)}
-                >
-                  <option value="">Select Locale</option>
-                  <For each={ns.voiceLangs}>{(lang) => <option value={lang}>{lang}</option>}</For>
-                </select>
-                <select
-                  name="speaker-name"
-                  class="text-sm text-text bg-bg"
-                  value={ns.selSpeaker}
-                  onChange={(v) => setNativeStore('selSpeaker', v.target.value)}
-                >
-                  <option value="">Select Speaker</option>
-                  <For each={ns.voiceInfo.filter((i) => i.lang === ns.selLang)}>
-                    {(speaker) => <option value={speaker.name}>{speaker.name}</option>}
-                  </For>
-                </select>
-                <div
-                  class="i-ri-volume-up-fill text-sm cursor-pointer hover:text-blue"
-                  onClick={() => NativeTts.TryListening(selectedVoice())}
-                />
-              </div>
-            </Show>
-          </div>
-        </div>
-      </div>
+      <Tabs.Root
+        defaultValue="default"
+        value={ns.selCate}
+        onValueChange={(v) => {
+          setNativeStore("selCate", v.value);
+          if (v.value === "default") {
+            setNativeStore("selLang", v.value || "");
+            setNativeStore("selSpeaker", "");
+          }
+        }}
+      >
+        <Tabs.List>
+          <Tabs.Trigger value="default">Default Speaker</Tabs.Trigger>
+          <Tabs.Trigger value="manual">Manual Select</Tabs.Trigger>
+          <Tabs.Indicator />
+        </Tabs.List>
+        <Tabs.Content value="default">
+          This will invoke the default speaker of your platform (Siri for macOS,
+          Cortana for Windows).
+          <Button variant="ghost" onClick={tryListening}>
+            <div class="i-ri-volume-up-fill" />
+          </Button>
+        </Tabs.Content>
+        <Tabs.Content value="manual">
+          <Show when={ns.voiceInfo} fallback={<div>Loading...</div>}>
+            <div class="flex gap-4 items-end">
+              <Selector
+                classNames="w-16rem"
+                label="Locale"
+                placeholder="Select Locale"
+                value={ns.selLang}
+                data={ns.voiceLangs.map((i) => ({ label: i, value: i }))}
+                onValueChanged={(v) => setNativeStore("selLang", v.value[0])}
+              />
+              <Selector
+                label="Speaker"
+                classNames="w-30rem"
+                placeholder="Select Speaker"
+                value={ns.selSpeaker}
+                data={ns.voiceInfo
+                  .filter((i) => i.lang === ns.selLang)
+                  .map((i) => ({ label: i.name, value: i.name }))}
+                onValueChanged={(v) => setNativeStore("selSpeaker", v.value[0])}
+              />
+              <Button
+                variant="ghost"
+                disabled={
+                  selectedVoice() === undefined ||
+                  ns.selLang === "" ||
+                  ns.selSpeaker === ""
+                }
+                onClick={tryListening}
+              >
+                <div class="i-ri-volume-up-fill" />
+              </Button>
+            </div>
+          </Show>
+        </Tabs.Content>
+      </Tabs.Root>
 
       <Show when={ns.errMsg}>
         <div class="p-3 bg-red/10 text-red border border-red/30 rounded-md">
@@ -208,28 +227,25 @@ function Home() {
       </Show>
 
       <div class="flex justify-end">
-        <button
-          class={clsx(
-            'text-sm bg-blue hover:bg-blue-hover',
-            'text-white rounded-md font-medium',
-            'disabled:bg-gray disabled:cursor-not-allowed',
-          )}
+        <Button
           onClick={generateTtsNative}
-          disabled={ns.content.trim() === '' || ns.outputPath === '' || ns.isLoading}
+          disabled={
+            ns.content.trim() === "" || ns.outputPath === "" || ns.isLoading
+          }
         >
           Generate
-        </button>
+        </Button>
       </div>
       <Show when={ns.finalAudioPath}>
         <div class="p-3 bg-green/10 text-green text-sm border border-green/30 rounded-md">
-          File saved at <span class="font-mono">{ns.finalAudioPath}</span>.{' '}
+          File saved at <span class="font-mono">{ns.finalAudioPath}</span>.{" "}
           <a
             onClick={async () => {
               try {
-                await OsService.OpenFolder(ns.finalAudioPath)
+                await OsService.OpenFolder(ns.finalAudioPath);
               } catch (e) {
-                console.log(e)
-                await OsService.OpenFolder(ns.outputPath)
+                console.log(e);
+                await OsService.OpenFolder(ns.outputPath);
               }
             }}
             class="hover:underline cursor-pointer"
@@ -240,7 +256,7 @@ function Home() {
         </div>
       </Show>
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;
