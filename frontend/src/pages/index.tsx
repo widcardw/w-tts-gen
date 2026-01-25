@@ -1,46 +1,41 @@
-import { Show, createMemo, onMount } from "solid-js";
-import { Dialogs } from "@wailsio/runtime";
+import { Show, createMemo, onMount } from 'solid-js'
+import { Dialogs } from '@wailsio/runtime'
 
-import { nativeStore as ns, setNativeStore } from "~/stores/app";
-import { NativeTts, OsService } from "#/bridgetts/services";
-import { VoiceInfo } from "#/bridgetts/services/nativeinvocation";
-import { Button } from "~/components/ui/Button";
-import { Field, Tabs } from "@ark-ui/solid";
+import { nativeStore as ns, setNativeStore } from '~/stores/app'
+import { NativeTts, OsService } from '#/bridgetts/services'
+import { VoiceInfo } from '#/bridgetts/services/nativeinvocation'
+import { Button } from '~/components/ui/Button'
+import { Field, Tabs } from '@ark-ui/solid'
 
-import "~/components/styles/input-field.css";
-import "~/components/styles/radio-group.css";
-import "~/components/styles/tabs.css";
-import { Selector } from "~/components/ui/Selector";
+import '~/components/styles/input-field.css'
+import '~/components/styles/radio-group.css'
+import '~/components/styles/tabs.css'
+import { Selector } from '~/components/ui/Selector'
 
 function Home() {
   async function getVoices() {
     try {
-      setNativeStore("isLoading", true);
-      const voices: Array<VoiceInfo> = await NativeTts.GetVoices();
-      setNativeStore("voiceInfo", voices);
-      setNativeStore(
-        "voiceLangs",
-        Array.from(new Set(voices.map((i) => i.lang))).sort(),
-      );
+      setNativeStore('isLoading', true)
+      const voices: Array<VoiceInfo> = await NativeTts.GetVoices()
+      setNativeStore('voiceInfo', voices)
+      setNativeStore('voiceLangs', Array.from(new Set(voices.map((i) => i.lang))).sort())
     } catch (e) {
-      setNativeStore("errMsg", String(e));
+      setNativeStore('errMsg', String(e))
     } finally {
-      setNativeStore("isLoading", false);
+      setNativeStore('isLoading', false)
     }
   }
 
   const selectedVoice = createMemo(() => {
-    if (ns.selCate === "default") return undefined;
-    return ns.voiceInfo.find(
-      (i) => i.lang === ns.selLang && i.name === ns.selSpeaker,
-    );
-  });
+    if (ns.selCate === 'default') return undefined
+    return ns.voiceInfo.find((i) => i.lang === ns.selLang && i.name === ns.selSpeaker)
+  })
 
   onMount(async () => {
     if (ns.voiceInfo.length === 0) {
-      await getVoices();
+      await getVoices()
     }
-  });
+  })
 
   async function ChooseOutputDialog() {
     try {
@@ -48,84 +43,71 @@ function Home() {
         AllowsMultipleSelection: false,
         CanChooseDirectories: true,
         CanChooseFiles: true,
-        Title: "Choose Output Path/Directory",
-      });
+        Title: 'Choose Output Path/Directory',
+      })
       if (selectedPath) {
-        setNativeStore("outputPath", selectedPath);
+        setNativeStore('outputPath', selectedPath)
       }
     } catch (err) {
-      console.error("Error selecting file:", err);
-      setNativeStore("outputPath", "");
-      setNativeStore("errMsg", err);
+      console.error('Error selecting file:', err)
+      setNativeStore('outputPath', '')
+      setNativeStore('errMsg', err)
     }
-    await checkPathStat();
+    await checkPathStat()
   }
 
   async function generateTtsNative() {
-    if (ns.content.trim() === "" || ns.outputPath === "") {
-      return;
+    if (ns.content.trim() === '' || ns.outputPath === '') {
+      return
     }
     try {
-      setNativeStore("isLoading", true);
-      const audioPath = await NativeTts.GenerateSpeech(
-        selectedVoice(),
-        ns.content,
-        ns.outputPath,
-      );
-      setNativeStore("finalAudioPath", audioPath);
+      setNativeStore('isLoading', true)
+      const audioPath = await NativeTts.GenerateSpeech(selectedVoice(), ns.content, ns.outputPath)
+      setNativeStore('finalAudioPath', audioPath)
     } catch (err) {
-      setNativeStore("errMsg", err);
+      setNativeStore('errMsg', err)
     } finally {
-      setNativeStore("isLoading", false);
+      setNativeStore('isLoading', false)
     }
   }
 
   async function checkPathStat() {
-    if (ns.outputPath.trim() == "") {
-      setNativeStore("pathState", "");
-      return;
+    if (ns.outputPath.trim() == '') {
+      setNativeStore('pathState', '')
+      return
     }
-    const stat = await OsService.PathStat(ns.outputPath);
+    const stat = await OsService.PathStat(ns.outputPath)
     switch (stat) {
-      case "file": {
-        setNativeStore(
-          "pathState",
-          "Selected a file. Generating TTS will overwrite the file.",
-        );
-        break;
+      case 'file': {
+        setNativeStore('pathState', 'Selected a file. Generating TTS will overwrite the file.')
+        break
       }
-      case "dir": {
-        setNativeStore(
-          "pathState",
-          "Selected a folder. The TTS file will be put in the folder.",
-        );
-        break;
+      case 'dir': {
+        setNativeStore('pathState', 'Selected a folder. The TTS file will be put in the folder.')
+        break
       }
-      case "empty": {
-        setNativeStore("pathState", "No folder/path Selected.");
-        break;
+      case 'empty': {
+        setNativeStore('pathState', 'No folder/path Selected.')
+        break
       }
-      case "non-exist": {
-        setNativeStore(
-          "pathState",
-          "The folder does not exist. It will be created automatically.",
-        );
-        break;
+      case 'non-exist': {
+        setNativeStore('pathState', 'The folder does not exist. It will be created automatically.')
+        break
       }
       default: {
-        setNativeStore("pathState", `Caught error: ${stat}`);
+        setNativeStore('pathState', `Caught error: ${stat}`)
       }
     }
   }
 
   async function tryListening() {
     try {
-      setNativeStore("isListening", true);
-      await NativeTts.TryListening(selectedVoice());
+      setNativeStore('isListening', true)
+      await NativeTts.TryListening(selectedVoice())
     } catch (e) {
-      setNativeStore("errMsg", String(e));
+      setNativeStore('errMsg', String(e))
     } finally {
-      setNativeStore("isListening", false);
+      setNativeStore('isListening', false)
     }
   }
 
@@ -137,7 +119,7 @@ function Home() {
           class="text-1rem py-1"
           autocomplete="false"
           value={ns.content}
-          onInput={(e) => setNativeStore("content", e.target.value)}
+          onInput={(e) => setNativeStore('content', e.target.value)}
           placeholder="Please input the text to synthesize..."
         />
       </Field.Root>
@@ -148,14 +130,14 @@ function Home() {
           <Field.Input
             class="font-mono text-sm flex-1"
             value={ns.outputPath}
-            onInput={(e) => setNativeStore("outputPath", e.target.value)}
+            onInput={(e) => setNativeStore('outputPath', e.target.value)}
             onBlur={checkPathStat}
           />
           <Button onClick={ChooseOutputDialog}>Choose</Button>
         </div>
         <Field.HelperText>
-          {ns.pathState === "" && ns.outputPath.trim() === ""
-            ? "No folder selected."
+          {ns.pathState === '' && ns.outputPath.trim() === ''
+            ? 'No folder selected.'
             : ns.pathState}
         </Field.HelperText>
       </Field.Root>
@@ -164,10 +146,10 @@ function Home() {
         defaultValue="default"
         value={ns.selCate}
         onValueChange={(v) => {
-          setNativeStore("selCate", v.value);
-          if (v.value === "default") {
-            setNativeStore("selLang", v.value || "");
-            setNativeStore("selSpeaker", "");
+          setNativeStore('selCate', v.value)
+          if (v.value === 'default') {
+            setNativeStore('selLang', v.value || '')
+            setNativeStore('selSpeaker', '')
           }
         }}
       >
@@ -177,8 +159,8 @@ function Home() {
           <Tabs.Indicator />
         </Tabs.List>
         <Tabs.Content value="default">
-          This will invoke the default speaker of your platform (Siri for macOS,
-          Cortana for Windows).
+          This will invoke the default speaker of your platform (Siri for macOS, Cortana for
+          Windows).
           <Button variant="ghost" onClick={tryListening}>
             <div class="i-ri-volume-up-fill" />
           </Button>
@@ -192,7 +174,7 @@ function Home() {
                 placeholder="Select Locale"
                 value={ns.selLang}
                 data={ns.voiceLangs.map((i) => ({ label: i, value: i }))}
-                onValueChanged={(v) => setNativeStore("selLang", v.value[0])}
+                onValueChanged={(v) => setNativeStore('selLang', v.value[0])}
               />
               <Selector
                 label="Speaker"
@@ -202,14 +184,12 @@ function Home() {
                 data={ns.voiceInfo
                   .filter((i) => i.lang === ns.selLang)
                   .map((i) => ({ label: i.name, value: i.name }))}
-                onValueChanged={(v) => setNativeStore("selSpeaker", v.value[0])}
+                onValueChanged={(v) => setNativeStore('selSpeaker', v.value[0])}
               />
               <Button
                 variant="ghost"
                 disabled={
-                  selectedVoice() === undefined ||
-                  ns.selLang === "" ||
-                  ns.selSpeaker === ""
+                  selectedVoice() === undefined || ns.selLang === '' || ns.selSpeaker === ''
                 }
                 onClick={tryListening}
               >
@@ -229,23 +209,21 @@ function Home() {
       <div class="flex justify-end">
         <Button
           onClick={generateTtsNative}
-          disabled={
-            ns.content.trim() === "" || ns.outputPath === "" || ns.isLoading
-          }
+          disabled={ns.content.trim() === '' || ns.outputPath === '' || ns.isLoading}
         >
           Generate
         </Button>
       </div>
       <Show when={ns.finalAudioPath}>
         <div class="p-3 bg-green/10 text-green text-sm border border-green/30 rounded-md">
-          File saved at <span class="font-mono">{ns.finalAudioPath}</span>.{" "}
+          File saved at <span class="font-mono">{ns.finalAudioPath}</span>.{' '}
           <a
             onClick={async () => {
               try {
-                await OsService.OpenFolder(ns.finalAudioPath);
+                await OsService.OpenFolder(ns.finalAudioPath)
               } catch (e) {
-                console.log(e);
-                await OsService.OpenFolder(ns.outputPath);
+                console.log(e)
+                await OsService.OpenFolder(ns.outputPath)
               }
             }}
             class="hover:underline cursor-pointer"
@@ -256,7 +234,7 @@ function Home() {
         </div>
       </Show>
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home

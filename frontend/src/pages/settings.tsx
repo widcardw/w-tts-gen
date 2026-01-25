@@ -1,3 +1,4 @@
+import { createSignal, For, Show } from 'solid-js'
 import clsx from 'clsx'
 import {
   configStore as cs,
@@ -8,7 +9,7 @@ import {
   configStore,
   setNativeStore,
 } from '~/stores/app'
-import { createSignal, For, Show } from 'solid-js'
+import { setEdgeStore } from '~/stores/edge'
 import { ConfigService } from '#/bridgetts/services'
 import { changeTheme } from '~/utils/theme'
 import { Dialogs } from '@wailsio/runtime'
@@ -44,6 +45,7 @@ function Settings() {
       setConfigSavedMsg('Successfully saved at ' + msg)
       setConfigChanged(false)
       setNativeStore('outputPath', configStore.defaultSaveDir)
+      setEdgeStore('outputPath', configStore.defaultSaveDir)
       hideMessageAfterDelay()
     } catch (e) {
       setConfigSaveErrorMsg('Failed to save config! ' + String(e))

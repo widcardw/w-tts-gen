@@ -17,7 +17,8 @@
 [data-scope='select'][data-part='trigger'] {
   border: 1px solid;
   --at-apply: border-border rounded bg-transparent w-full text-text font-sans;
-  --at-apply: inline-flex justify-between cursor-pointer items-center gap-2 p-inline-3 h-10 text-1rem;
+  --at-apply: inline-flex justify-between cursor-pointer items-center gap-2 p-inline-3 h-10
+    text-1rem;
 }
 /* [data-scope='select'][data-part='value-text'] {
 } */
