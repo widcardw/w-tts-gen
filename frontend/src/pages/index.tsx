@@ -10,17 +10,34 @@ import { Field, Tabs } from '@ark-ui/solid'
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
 import '~/components/styles/tabs.css'
+import '~/components/styles/toast.css'
 import { Selector } from '~/components/ui/Selector'
+import { Toast, Toaster, createToaster } from '@ark-ui/solid/toast'
 
 function Home() {
+    const toaster = createToaster({
+    placement: 'bottom-end',
+    gap: 24,
+  })
+  
   async function getVoices() {
     try {
       setNativeStore('isLoading', true)
       const voices: Array<VoiceInfo> = await NativeTts.GetVoices()
       setNativeStore('voiceInfo', voices)
       setNativeStore('voiceLangs', Array.from(new Set(voices.map((i) => i.lang))).sort())
+      toaster.create({
+        title: 'Voices loaded successfully!',
+        type: 'success',
+        duration: 5000,
+      })
     } catch (e) {
-      setNativeStore('errMsg', String(e))
+      toaster.create({
+        title: 'Error loading voices!',
+        description: String(e),
+        type: 'error',
+        duration: 0,
+      })
     } finally {
       setNativeStore('isLoading', false)
     }
@@ -233,6 +250,17 @@ function Home() {
           .
         </div>
       </Show>
+      <Toaster toaster={toaster}>
+        {(toast) => (
+          <Toast.Root>
+            <Toast.Title>{toast().title}</Toast.Title>
+            <Toast.Description>{toast().description}</Toast.Description>
+            <Toast.CloseTrigger>
+              <div class="i-ri-close-line" />
+            </Toast.CloseTrigger>
+          </Toast.Root>
+        )}
+      </Toaster>
     </div>
   )
 }

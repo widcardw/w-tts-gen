@@ -6,19 +6,41 @@ import { Dialogs } from '@wailsio/runtime'
 import { Accessor } from 'solid-js'
 import { Button } from '~/components/ui/Button'
 import { Field, Slider } from '@ark-ui/solid'
+import { Toast, Toaster, createToaster } from '@ark-ui/solid/toast'
 
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
 import '~/components/styles/tabs.css'
 import '~/components/styles/slider.css'
+import '~/components/styles/toast.css'
 import { Selector } from '~/components/ui/Selector'
 
 function EdgeTts() {
+
+  const toaster = createToaster({
+    placement: 'bottom-end',
+    gap: 24,
+  })
+
   onMount(async () => {
     if (es.voiceInfo.length === 0) {
-      const voiceList: Voice[] = await EdgeTtsService.ListVoices()
-      setEdgeStore('voiceInfo', voiceList)
-      setEdgeStore('locales', Array.from(new Set(voiceList.map((i) => i.Locale))).sort())
+      try {
+        const voiceList: Voice[] = await EdgeTtsService.ListVoices()
+        setEdgeStore('voiceInfo', voiceList)
+        setEdgeStore('locales', Array.from(new Set(voiceList.map((i) => i.Locale))).sort())
+        toaster.create({
+          title: 'Voices loaded successfully',
+          type: 'success',
+          duration: 5000,
+        })
+      } catch (err) {
+        console.error('Error listing voices:', err)
+        toaster.create({
+          title: 'Error listing voices',
+          type: 'error',
+          duration: 5000,
+        })
+      }
     }
   })
 
@@ -225,9 +247,9 @@ function EdgeTts() {
       </Slider.Root>
 
       <Slider.Root
-        min={-10000}
-        max={10000}
-        step={100}
+        min={-500}
+        max={500}
+        step={1}
         value={[es.pitch]}
         onValueChange={(v) => setEdgeStore('pitch', Number(v.value[0]))}
       >
@@ -253,11 +275,17 @@ function EdgeTts() {
             </Slider.Thumb>
           </Slider.Control>
           <Slider.MarkerGroup>
-            <Slider.Marker value={-10000}>-10000</Slider.Marker>
-            <Slider.Marker value={-5000}>-5000</Slider.Marker>
+            <Slider.Marker value={-500}>-500</Slider.Marker>
+            <Slider.Marker value={-400}>-400</Slider.Marker>
+            <Slider.Marker value={-300}>-300</Slider.Marker>
+            <Slider.Marker value={-200}>-200</Slider.Marker>
+            <Slider.Marker value={-100}>-100</Slider.Marker>
             <Slider.Marker value={0}>0</Slider.Marker>
-            <Slider.Marker value={5000}>5000</Slider.Marker>
-            <Slider.Marker value={10000}>10000</Slider.Marker>
+            <Slider.Marker value={100}>100</Slider.Marker>
+            <Slider.Marker value={200}>200</Slider.Marker>
+            <Slider.Marker value={300}>300</Slider.Marker>
+            <Slider.Marker value={400}>400</Slider.Marker>
+            <Slider.Marker value={500}>500</Slider.Marker>
           </Slider.MarkerGroup>
         </div>
       </Slider.Root>
@@ -295,6 +323,17 @@ function EdgeTts() {
           .
         </div>
       </Show>
+      <Toaster toaster={toaster}>
+        {(toast) => (
+          <Toast.Root>
+            <Toast.Title>{toast().title}</Toast.Title>
+            <Toast.Description>{toast().description}</Toast.Description>
+            <Toast.CloseTrigger>
+              <div class="i-ri-close-line" />
+            </Toast.CloseTrigger>
+          </Toast.Root>
+        )}
+      </Toaster>
     </div>
   )
 }
