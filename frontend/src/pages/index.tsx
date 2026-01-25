@@ -69,6 +69,7 @@ function Home() {
       console.error('Error selecting file:', err)
       setNativeStore('outputPath', '')
       setNativeStore('errMsg', err)
+      toaster.error({ description: String(err) })
     }
     await checkPathStat()
   }
@@ -148,6 +149,7 @@ function Home() {
       await NativeTts.TryListening(selectedVoice())
     } catch (e) {
       setNativeStore('errMsg', String(e))
+      toaster.error({ description: String(e) })
     } finally {
       setNativeStore('isListening', false)
     }
@@ -241,12 +243,6 @@ function Home() {
           </Show>
         </Tabs.Content>
       </Tabs.Root>
-
-      <Show when={ns.errMsg}>
-        <div class="p-3 bg-red/10 text-red border border-red/30 rounded-md">
-          {String(ns.errMsg)}
-        </div>
-      </Show>
 
       <div class="flex justify-end">
         <Button

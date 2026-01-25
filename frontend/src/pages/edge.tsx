@@ -61,6 +61,9 @@ function EdgeTts() {
       console.error('Error selecting file:', err)
       setEdgeStore('outputPath', '')
       setEdgeStore('errMsg', err)
+      toaster.error({
+        description: String(err),
+      })
     }
     await checkPathStat()
   }
@@ -313,12 +316,6 @@ function EdgeTts() {
         </div>
       </Slider.Root>
 
-      <Show when={es.errMsg}>
-        <div class="p-3 bg-red/10 text-red border border-red/30 rounded-md">
-          {String(es.errMsg)}
-        </div>
-      </Show>
-
       <div class="flex justify-end">
         <Button
           onClick={generateTtsEdge}
@@ -327,25 +324,6 @@ function EdgeTts() {
           Generate
         </Button>
       </div>
-      <Show when={es.finalAudioPath}>
-        <div class="p-3 bg-green/10 text-green text-sm border border-green/30 rounded-md">
-          File saved at <span class="font-mono">{es.finalAudioPath}</span>.{' '}
-          <a
-            onClick={async () => {
-              try {
-                await OsService.OpenFolder(es.finalAudioPath)
-              } catch (e) {
-                console.log(e)
-                await OsService.OpenFolder(es.outputPath)
-              }
-            }}
-            class="hover:underline cursor-pointer"
-          >
-            Open folder
-          </a>
-          .
-        </div>
-      </Show>
     </div>
   )
 }
