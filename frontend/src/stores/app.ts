@@ -3,7 +3,7 @@ import { createStore } from 'solid-js/store'
 import { VoiceInfo } from '../../bindings/bridgetts/services/nativeinvocation'
 
 const [nativeStore, setNativeStore] = createStore<{
-  leadingMsg: {msg: string, color: string}
+  leadingMsg: { msg: string; color: string }
   content: string
   outputPath: string
   errMsg: any
@@ -17,7 +17,7 @@ const [nativeStore, setNativeStore] = createStore<{
   selSpeaker: string
   isListening: boolean
 }>({
-  leadingMsg: {msg: '', color: ''},
+  leadingMsg: { msg: '', color: '' },
   content: '',
   outputPath: '',
   errMsg: null,

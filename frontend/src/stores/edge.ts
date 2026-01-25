@@ -2,7 +2,7 @@ import { createStore } from 'solid-js/store'
 import { Voice } from '../../bindings/github.com/wujunwei928/edge-tts-go/edge_tts'
 
 const [edgeStore, setEdgeStore] = createStore<{
-  leadingMsg: {msg: string, color: string}
+  leadingMsg: { msg: string; color: string }
   content: string
   outputPath: string
   errMsg: any
@@ -17,7 +17,7 @@ const [edgeStore, setEdgeStore] = createStore<{
   volume: number
   pitch: number
 }>({
-  leadingMsg: {msg:'', color: ''},
+  leadingMsg: { msg: '', color: '' },
   content: '',
   outputPath: '',
   errMsg: null,

@@ -6,7 +6,6 @@ import { Dialogs } from '@wailsio/runtime'
 import { Accessor } from 'solid-js'
 import { Button } from '~/components/ui/Button'
 import { Field, Slider } from '@ark-ui/solid'
-import { Toast, Toaster, createToaster } from '@ark-ui/solid/toast'
 
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
@@ -14,31 +13,30 @@ import '~/components/styles/tabs.css'
 import '~/components/styles/slider.css'
 import '~/components/styles/toast.css'
 import { Selector } from '~/components/ui/Selector'
+import { toaster } from '~/utils/toaster'
 
 function EdgeTts() {
-
-  const toaster = createToaster({
-    placement: 'bottom-end',
-    gap: 24,
-  })
-
   onMount(async () => {
     if (es.voiceInfo.length === 0) {
+      const loadingToast = toaster.create({
+        title: 'Loading Voices...',
+        type: 'info',
+      })
       try {
         const voiceList: Voice[] = await EdgeTtsService.ListVoices()
         setEdgeStore('voiceInfo', voiceList)
         setEdgeStore('locales', Array.from(new Set(voiceList.map((i) => i.Locale))).sort())
-        toaster.create({
+        toaster.update(loadingToast, {
           title: 'Voices loaded successfully',
           type: 'success',
           duration: 5000,
         })
       } catch (err) {
         console.error('Error listing voices:', err)
-        toaster.create({
+        toaster.update(loadingToast, {
           title: 'Error listing voices',
           type: 'error',
-          duration: 5000,
+          description: String(err),
         })
       }
     }
@@ -111,8 +109,33 @@ function EdgeTts() {
         es.content,
       )
       setEdgeStore('finalAudioPath', audioPath)
+      toaster.create({
+        description: (
+          <>
+            File saved at <span class="font-mono">{es.finalAudioPath}</span>.{' '}
+            <a
+              class="cursor-pointer inline-flex items-center gap-1"
+              onClick={async () => {
+                try {
+                  await OsService.OpenFolder(es.finalAudioPath)
+                } catch (e) {
+                  console.log(e)
+                  await OsService.OpenFolder(es.outputPath)
+                }
+              }}
+            >
+              Open <div class="w-3 h-3 i-ri-external-link-line" />
+            </a>
+          </>
+        ),
+        type: 'success',
+        duration: 0,
+      })
     } catch (err) {
-      setEdgeStore('errMsg', err)
+      toaster.error({
+        title: 'Error',
+        description: String(err),
+      })
     } finally {
       setEdgeStore('isLoading', false)
     }
@@ -323,17 +346,6 @@ function EdgeTts() {
           .
         </div>
       </Show>
-      <Toaster toaster={toaster}>
-        {(toast) => (
-          <Toast.Root>
-            <Toast.Title>{toast().title}</Toast.Title>
-            <Toast.Description>{toast().description}</Toast.Description>
-            <Toast.CloseTrigger>
-              <div class="i-ri-close-line" />
-            </Toast.CloseTrigger>
-          </Toast.Root>
-        )}
-      </Toaster>
     </div>
   )
 }

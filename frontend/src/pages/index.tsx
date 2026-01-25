@@ -12,31 +12,31 @@ import '~/components/styles/radio-group.css'
 import '~/components/styles/tabs.css'
 import '~/components/styles/toast.css'
 import { Selector } from '~/components/ui/Selector'
-import { Toast, Toaster, createToaster } from '@ark-ui/solid/toast'
+
+import { toaster } from '~/utils/toaster'
 
 function Home() {
-    const toaster = createToaster({
-    placement: 'bottom-end',
-    gap: 24,
-  })
-  
   async function getVoices() {
+    const loadingToast = toaster.create({
+      title: 'Loading Voices...',
+      type: 'info',
+      duration: 5000,
+    })
     try {
       setNativeStore('isLoading', true)
       const voices: Array<VoiceInfo> = await NativeTts.GetVoices()
       setNativeStore('voiceInfo', voices)
       setNativeStore('voiceLangs', Array.from(new Set(voices.map((i) => i.lang))).sort())
-      toaster.create({
+      toaster.update(loadingToast, {
         title: 'Voices loaded successfully!',
         type: 'success',
         duration: 5000,
       })
     } catch (e) {
-      toaster.create({
+      toaster.update(loadingToast, {
         title: 'Error loading voices!',
         description: String(e),
         type: 'error',
-        duration: 0,
       })
     } finally {
       setNativeStore('isLoading', false)
@@ -81,8 +81,33 @@ function Home() {
       setNativeStore('isLoading', true)
       const audioPath = await NativeTts.GenerateSpeech(selectedVoice(), ns.content, ns.outputPath)
       setNativeStore('finalAudioPath', audioPath)
+      toaster.create({
+        description: (
+          <>
+            File saved at <span class="font-mono">{ns.finalAudioPath}</span>.{' '}
+            <a
+              class="cursor-pointer inline-flex items-center gap-1"
+              onClick={async () => {
+                try {
+                  await OsService.OpenFolder(ns.finalAudioPath)
+                } catch (e) {
+                  console.log(e)
+                  await OsService.OpenFolder(ns.outputPath)
+                }
+              }}
+            >
+              Open <div class="w-3 h-3 i-ri-external-link-line" />
+            </a>
+          </>
+        ),
+        type: 'success',
+        duration: 0,
+      })
     } catch (err) {
-      setNativeStore('errMsg', err)
+      toaster.error({
+        title: 'Error',
+        description: String(err),
+      })
     } finally {
       setNativeStore('isLoading', false)
     }
@@ -231,36 +256,6 @@ function Home() {
           Generate
         </Button>
       </div>
-      <Show when={ns.finalAudioPath}>
-        <div class="p-3 bg-green/10 text-green text-sm border border-green/30 rounded-md">
-          File saved at <span class="font-mono">{ns.finalAudioPath}</span>.{' '}
-          <a
-            onClick={async () => {
-              try {
-                await OsService.OpenFolder(ns.finalAudioPath)
-              } catch (e) {
-                console.log(e)
-                await OsService.OpenFolder(ns.outputPath)
-              }
-            }}
-            class="hover:underline cursor-pointer"
-          >
-            Open folder
-          </a>
-          .
-        </div>
-      </Show>
-      <Toaster toaster={toaster}>
-        {(toast) => (
-          <Toast.Root>
-            <Toast.Title>{toast().title}</Toast.Title>
-            <Toast.Description>{toast().description}</Toast.Description>
-            <Toast.CloseTrigger>
-              <div class="i-ri-close-line" />
-            </Toast.CloseTrigger>
-          </Toast.Root>
-        )}
-      </Toaster>
     </div>
   )
 }

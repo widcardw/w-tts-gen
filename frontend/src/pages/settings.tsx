@@ -10,7 +10,7 @@ import {
   setNativeStore,
 } from '~/stores/app'
 import { setEdgeStore } from '~/stores/edge'
-import { ConfigService } from '#/bridgetts/services'
+import { ConfigService, OsService } from '#/bridgetts/services'
 import { changeTheme } from '~/utils/theme'
 import { Dialogs } from '@wailsio/runtime'
 import { Button } from '~/components/ui/Button'
@@ -19,18 +19,10 @@ import { Field, RadioGroup, Checkbox } from '@ark-ui/solid'
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
 import '~/components/styles/checkbox.css'
+import { toaster } from '~/utils/toaster'
 
 function Settings() {
-  const [configSavedMsg, setConfigSavedMsg] = createSignal('')
-  const [configSaveErrorMsg, setConfigSaveErrorMsg] = createSignal('')
   const [isLoading, setLoading] = createSignal(false)
-
-  function hideMessageAfterDelay() {
-    setTimeout(() => {
-      setConfigSavedMsg('')
-      setConfigSaveErrorMsg('')
-    }, 10000)
-  }
 
   async function tryToSaveConfig() {
     setLoading(true)
@@ -42,14 +34,32 @@ function Settings() {
           theme: configStore.theme,
         }),
       )
-      setConfigSavedMsg('Successfully saved at ' + msg)
+      toaster.create({
+        title: 'Success',
+        description: (
+          <>
+            Saved config at <code class="text-sm">{msg}</code>.{' '}
+            <a
+              class="cursor-pointer inline-flex items-center gap-1"
+              onClick={async () => {
+                await OsService.OpenFolder(msg)
+              }}
+            >
+              Open <div class="w-3 h-3 i-ri-external-link-line" />
+            </a>
+          </>
+        ),
+        type: 'success',
+      })
       setConfigChanged(false)
       setNativeStore('outputPath', configStore.defaultSaveDir)
       setEdgeStore('outputPath', configStore.defaultSaveDir)
-      hideMessageAfterDelay()
     } catch (e) {
-      setConfigSaveErrorMsg('Failed to save config! ' + String(e))
-      hideMessageAfterDelay()
+      toaster.create({
+        title: 'Error',
+        description: `Error occurred at ${String(e)}!`,
+        type: 'error',
+      })
     } finally {
       setLoading(false)
     }
@@ -79,8 +89,11 @@ function Settings() {
         setConfigChanged(true)
       }
     } catch (e) {
-      setConfigSaveErrorMsg('Failed to select path! ' + String(e))
-      hideMessageAfterDelay()
+      toaster.create({
+        title: 'Error',
+        description: 'Failed to select path! ' + String(e),
+        type: 'error',
+      })
     }
   }
 
@@ -163,14 +176,6 @@ function Settings() {
         >
           Save
         </Button>
-      </div>
-      <div class="space-y-2">
-        <Show when={configSavedMsg()}>
-          <div class="bg-green/10 text-green p-2 rounded text-sm">{configSavedMsg()}</div>
-        </Show>
-        <Show when={configSaveErrorMsg()}>
-          <div class="bg-red/10 text-red p-2 rounded text-sm">{configSaveErrorMsg()}</div>
-        </Show>
       </div>
     </div>
   )

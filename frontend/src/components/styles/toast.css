@@ -24,22 +24,22 @@
 
 [data-scope='toast'][data-part='root'] {
   &[data-type='error'] {
-    --at-apply: light:bg-red-100 text-red;
+    --at-apply: light-bg-red-100 text-red;
   }
 
   &[data-type='info'] {
-    --at-apply: light:bg-blue-100 text-blue;
+    --at-apply: light-bg-blue-100 text-blue;
   }
 
   &[data-type='warning'] {
-    --at-apply: light:bg-orange-100 text-orange;
+    --at-apply: light-bg-orange-100 text-orange;
   }
 
   &[data-type='success'] {
-    --at-apply: light:bg-green-100 text-green;
+    --at-apply: light-bg-green-100 text-green;
   }
 
-  --at-apply: bg-mut shadow-md flex flex-col gap-1.5 rounded p-4 min-w-200px;
+  --at-apply: bg-mut shadow-md flex flex-col gap-1.5 rounded p-4 min-w-300px;
 }
 
 [data-scope='toast'][data-part='title'] {

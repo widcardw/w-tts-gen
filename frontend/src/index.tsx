@@ -3,7 +3,7 @@ import { render, Suspense } from 'solid-js/web'
 import { Router } from '@solidjs/router'
 import routes from '~solid-pages'
 import Layout from './components/Layout'
-import { onMount } from 'solid-js'
+import { onMount, Show } from 'solid-js'
 import { ConfigService } from '#/bridgetts/services'
 import { AppConfig, setConfigStore, setNativeStore } from './stores/app'
 import { setEdgeStore } from './stores/edge'
@@ -11,6 +11,8 @@ import { watchThemeIfAuto, changeTheme } from './utils/theme'
 
 import 'virtual:uno.css'
 import './styles/global.css'
+import { Toast, Toaster } from '@ark-ui/solid'
+import { toaster } from './utils/toaster'
 
 render(
   () => {
@@ -30,6 +32,21 @@ render(
         root={(props) => (
           <Suspense>
             <Layout>{props.children}</Layout>
+            <Toaster toaster={toaster}>
+              {(toast) => (
+                <Toast.Root>
+                  <Show when={toast().title}>
+                    <Toast.Title>{toast().title}</Toast.Title>
+                  </Show>
+                  <Show when={toast().description}>
+                    <Toast.Description>{toast().description}</Toast.Description>
+                  </Show>
+                  <Toast.CloseTrigger>
+                    <div class="i-ri-close-line" />
+                  </Toast.CloseTrigger>
+                </Toast.Root>
+              )}
+            </Toaster>
           </Suspense>
         )}
       >
