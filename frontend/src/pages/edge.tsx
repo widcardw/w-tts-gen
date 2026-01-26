@@ -1,4 +1,4 @@
-import { createMemo, onMount, Show } from 'solid-js'
+import { createMemo, onMount } from 'solid-js'
 import { edgeStore as es, setEdgeStore } from '../stores/edge'
 import { EdgeTtsService, OsService } from '#/bridgetts/services'
 import { Voice } from '#/github.com/wujunwei928/edge-tts-go/edge_tts'
@@ -132,7 +132,7 @@ function EdgeTts() {
           </>
         ),
         type: 'success',
-        duration: 0,
+        duration: 10000,
       })
     } catch (err) {
       toaster.error({

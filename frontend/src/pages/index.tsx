@@ -102,7 +102,7 @@ function Home() {
           </>
         ),
         type: 'success',
-        duration: 0,
+        duration: 10000,
       })
     } catch (err) {
       toaster.error({

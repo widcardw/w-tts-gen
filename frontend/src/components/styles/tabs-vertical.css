@@ -1,0 +1,17 @@
+.SideBar [data-scope='tabs'][data-part='indicator'] {
+  --at-apply: bg-primary w-2px;
+  height: var(--height);
+  left: 0;
+}
+
+a {
+    --at-apply: text-inherit flex items-center gap-3 text-sm;
+}
+
+.SideBar [data-scope='tabs'][data-part='trigger'] {
+    --at-apply: text-text of-x-hidden whitespace-nowrap;
+}
+
+.SideBar [data-scope='tabs'][data-part='trigger'][data-selected] {
+  --at-apply: text-primary font-bold;
+}

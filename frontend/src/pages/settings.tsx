@@ -155,18 +155,6 @@ function Settings() {
         </div>
         <Field.HelperText>The default path to save your audios</Field.HelperText>
       </Field.Root>
-      {/*<label>Default Save Path</label>
-        <input
-          class={clsx(
-            "block flex-1 p-2 bg-input-bg",
-            "focus:border-blue focus:ring-2 focus:ring-blue/30 rounded-md text-sm font-mono",
-          )}
-          value={cs.defaultSaveDir}
-          onInput={(v) => {
-            setConfigChanged(true);
-            setConfigStore("defaultSaveDir", v.target.value);
-          }}
-        />*/}
 
       <div class={clsx('flex justify-end items-center space-x-4')}>
         <Button

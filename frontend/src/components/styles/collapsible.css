@@ -1,0 +1,41 @@
+@keyframes slideDown {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: var(--width);
+    opacity: 100%;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    width: var(--width);
+    opacity: 100%;
+  }
+  to {
+    width: 0;
+    opacity: 0;
+  }
+}
+
+[data-scope='collapsible'][data-part='content'][data-state='open'] {
+  animation: slideDown 250ms;
+}
+
+[data-scope='collapsible'][data-part='content'][data-state='closed'] {
+  animation: slideUp 200ms;
+}
+
+[data-scope="collapsible"][data-part="root"]{
+    --at-apply: bg-mut;
+}
+
+[data-scope='collapsible'][data-part='content'] {
+    --at-apply: h-full w-150px;
+}
+
+[data-scope='collapsible'][data-part='trigger'] {
+    --at-apply: bg-transparent text-mut-foreground;
+}
