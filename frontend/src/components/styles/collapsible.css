@@ -28,14 +28,14 @@
   animation: slideUp 200ms;
 }
 
-[data-scope="collapsible"][data-part="root"]{
-    --at-apply: bg-mut;
+[data-scope='collapsible'][data-part='root'] {
+  --at-apply: bg-mut;
 }
 
 [data-scope='collapsible'][data-part='content'] {
-    --at-apply: h-full w-150px;
+  --at-apply: h-full w-150px;
 }
 
 [data-scope='collapsible'][data-part='trigger'] {
-    --at-apply: bg-transparent text-mut-foreground;
+  --at-apply: bg-transparent text-mut-foreground transition-all duration-200;
 }

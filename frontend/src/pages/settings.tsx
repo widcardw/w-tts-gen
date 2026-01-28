@@ -72,9 +72,9 @@ function Settings() {
     setConfigChanged(true)
     changeTheme(t)
   }
-  async function openDevTools() {
-    await ConfigService.OpenDevTools()
-  }
+  // async function openDevTools() {
+  //   await ConfigService.OpenDevTools()
+  // }
 
   async function chooseDefaultPath() {
     try {
@@ -99,9 +99,9 @@ function Settings() {
 
   return (
     <div class="space-y-6 mx-auto">
-      <div>
+      {/* <div>
         <Button onClick={openDevTools}>Open DevTools</Button>
-      </div>
+      </div> */}
       <RadioGroup.Root
         class="w-full"
         value={cs.theme}

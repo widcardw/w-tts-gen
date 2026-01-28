@@ -177,7 +177,7 @@ function EdgeTts() {
 
       <div class="flex gap-4 items-end">
         <Selector
-          classNames="w-14rem"
+          classNames="w-10rem"
           label="Locale"
           placeholder="Select Locale"
           value={es.selLocale}

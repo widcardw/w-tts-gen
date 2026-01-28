@@ -1,60 +1,62 @@
-import { Component, createMemo, createSignal, onMount, Show } from "solid-js";
-import { useLocation, useNavigate, A } from "@solidjs/router";
-import { Collapsible } from "@ark-ui/solid/collapsible";
-import clsx from "clsx";
-import { OsService } from "#/bridgetts/services";
-import { Tabs } from "@ark-ui/solid";
+import { Component, createMemo, createSignal, onMount, Show } from 'solid-js'
+import { useLocation, useNavigate, A } from '@solidjs/router'
+import { Collapsible } from '@ark-ui/solid/collapsible'
+import clsx from 'clsx'
+import { OsService } from '#/bridgetts/services'
+import { Tabs } from '@ark-ui/solid'
 
-import "~/components/styles/collapsible.css";
-import "~/components/styles/tabs-vertical.css";
+import '~/components/styles/collapsible.css'
+import '~/components/styles/tabs-vertical.css'
 
 const Layout: Component<{ children: any }> = (props) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const lastPathFragment = createMemo(() => {
-    const pathname = location.pathname;
-    return pathname.substring(pathname.lastIndexOf("/") + 1);
-  });
+    const pathname = location.pathname
+    return pathname.substring(pathname.lastIndexOf('/') + 1)
+  })
 
-  const activeTab = createMemo(() =>
-    lastPathFragment().length > 0 ? lastPathFragment() : "",
-  );
+  const activeTab = createMemo(() => (lastPathFragment().length > 0 ? lastPathFragment() : ''))
 
-  const [goos, setGoos] = createSignal<string>("");
+  const [goos, setGoos] = createSignal<string>('')
 
   onMount(async () => {
-    setGoos(await OsService.GetOs());
-  });
+    setGoos(await OsService.GetOs())
+  })
 
-  const [sideOpen, setSideOpen] = createSignal(true);
+  const [sideOpen, setSideOpen] = createSignal(true)
 
   return (
     <div class="min-h-screen w-full bg-bg flex">
-      <Collapsible.Root
-        open={sideOpen()}
-        onOpenChange={(v) => setSideOpen(v.open)}
-      >
+      <Collapsible.Root open={sideOpen()} onOpenChange={(v) => setSideOpen(v.open)}>
         <Collapsible.Trigger
           class={clsx(
-            "absolute top-2.5",
-            goos() === "darwin" ? "left-23" : "left-4",
+            'absolute top-2.5',
+            goos() === 'darwin' ? 'left-23' : sideOpen() ? 'left-4' : 'left-0',
           )}
         >
           <Collapsible.Indicator>
-            <div class="i-ri-side-bar-line w-5 h-5" />
+            <Show
+              when={sideOpen()}
+              fallback={
+                <div class="bg-mut rounded-rt-full rounded-rb-full flex items-center justify-center">
+                  <div class="i-ri-arrow-right-double-fill w-5 h-5" />
+                </div>
+              }
+            >
+              <div class="i-ri-side-bar-line w-5 h-5" />
+            </Show>
           </Collapsible.Indicator>
         </Collapsible.Trigger>
         <Collapsible.Content>
-          <Show when={goos() === "darwin"}>
-            <div class="w-full h-40px" />
-          </Show>
+          <div class="w-full h-40px" />
           <Tabs.Root
-            class={clsx("SideBar")}
+            class={clsx('SideBar')}
             orientation="vertical"
             value={activeTab()}
             onValueChange={({ value }) => {
-              navigate(`/${value}`);
+              navigate(`/${value}`)
             }}
           >
             <Tabs.Trigger value="">
@@ -82,14 +84,14 @@ const Layout: Component<{ children: any }> = (props) => {
 
       <main
         class={clsx(
-          "flex-1 container min-w-600px max-w-1200px mx-auto px-4 py-6",
-          goos() === "darwin" && "mt-20px",
+          'flex-1 container min-w-600px max-w-1200px mx-auto px-6 py-6',
+          goos() === 'darwin' && 'mt-20px',
         )}
       >
         {props.children}
       </main>
     </div>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

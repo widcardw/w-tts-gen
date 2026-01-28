@@ -5,11 +5,11 @@
 }
 
 a {
-    --at-apply: text-inherit flex items-center gap-3 text-sm;
+  --at-apply: text-inherit flex items-center gap-3 text-sm;
 }
 
 .SideBar [data-scope='tabs'][data-part='trigger'] {
-    --at-apply: text-text of-x-hidden whitespace-nowrap;
+  --at-apply: text-text of-x-hidden whitespace-nowrap;
 }
 
 .SideBar [data-scope='tabs'][data-part='trigger'][data-selected] {
