@@ -38,14 +38,12 @@ const Layout: Component<{ children: any }> = (props) => {
         >
           <Collapsible.Indicator>
             <Show
-              when={sideOpen()}
-              fallback={
-                <div class="bg-mut rounded-rt-full rounded-rb-full flex items-center justify-center">
-                  <div class="i-ri-arrow-right-double-fill w-5 h-5" />
-                </div>
-              }
+              when={!sideOpen() && goos() !== 'darwin'}
+              fallback={<div class="i-ri-side-bar-line w-5 h-5" />}
             >
-              <div class="i-ri-side-bar-line w-5 h-5" />
+              <div class="bg-mut rounded-rt-full rounded-rb-full flex items-center justify-center">
+                <div class="i-ri-arrow-right-double-fill w-5 h-5" />
+              </div>
             </Show>
           </Collapsible.Indicator>
         </Collapsible.Trigger>
