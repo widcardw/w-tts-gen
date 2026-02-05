@@ -1,11 +1,11 @@
 package services
 
 import (
-	"crypto/md5"
+	// "crypto/md5"
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
+	// "time"
 
 	"github.com/wujunwei928/edge-tts-go/edge_tts"
 )
@@ -20,10 +20,11 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 	
 	if info, err := os.Stat(outputPath); err == nil && info.IsDir() {
 		// Generate a unique filename based on content hash, timestamp, and extension
-		contentHash := fmt.Sprintf("%x", md5.Sum([]byte(content)))
-		timestamp := time.Now().Format("20060102150405")
-		filename := fmt.Sprintf("tts_%s_%s.mp3", contentHash[:8], timestamp)
-		outputPath = filepath.Join(outputPath, filename)
+		// contentHash := fmt.Sprintf("%x", md5.Sum([]byte(content)))
+		// timestamp := time.Now().Format("20060102150405")
+		// filename := fmt.Sprintf("tts_%s_%s.mp3", contentHash[:8], timestamp)
+		// outputPath = filepath.Join(outputPath, filename)
+		outputPath = GetFileName(content)
 	} else if err != nil && os.IsNotExist(err) {
 		// Check if parent directory exists, if not create it
 		parentDir := filepath.Dir(outputPath)

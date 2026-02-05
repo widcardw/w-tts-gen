@@ -1,14 +1,14 @@
 package services
 
 import (
-	"crypto/md5"
+	// "crypto/md5"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 
-	"time"
+	// "time"
 
 	ni "bridgetts/services/nativeinvocation"
 )
@@ -57,9 +57,10 @@ func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string) 
 	// Check if outputPath is a directory
 	if info, err := os.Stat(outputPath); err == nil && info.IsDir() {
 		// Generate a unique filename based on content hash, timestamp, and extension
-		contentHash := fmt.Sprintf("%x", md5.Sum([]byte(s)))
-		timestamp := time.Now().Format("20060102150405")
-		filename := fmt.Sprintf("tts_%s_%s.wav", contentHash[:8], timestamp)
+		// contentHash := fmt.Sprintf("%x", md5.Sum([]byte(s)))
+		// timestamp := time.Now().Format("20060102150405")
+		// filename := fmt.Sprintf("tts_%s_%s.wav", contentHash[:8], timestamp)
+		filename := GetFileName(s)
 		outputPath = filepath.Join(outputPath, filename)
 	} else if err != nil && os.IsNotExist(err) {
 		// Check if parent directory exists, if not create it
