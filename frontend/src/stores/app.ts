@@ -16,6 +16,7 @@ const [nativeStore, setNativeStore] = createStore<{
   selLang: string
   selSpeaker: string
   isListening: boolean
+  autoSlice: boolean
 }>({
   leadingMsg: { msg: '', color: '' },
   content: '',
@@ -30,6 +31,7 @@ const [nativeStore, setNativeStore] = createStore<{
   selLang: '',
   selSpeaker: '',
   isListening: false,
+  autoSlice: false
 })
 
 class AppConfig {

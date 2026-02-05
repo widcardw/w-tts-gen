@@ -5,13 +5,14 @@ import { Voice } from '#/github.com/wujunwei928/edge-tts-go/edge_tts'
 import { Dialogs } from '@wailsio/runtime'
 import { Accessor } from 'solid-js'
 import { Button } from '~/components/ui/Button'
-import { Field, Slider } from '@ark-ui/solid'
+import { Field, Slider, Switch } from '@ark-ui/solid'
 
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
 import '~/components/styles/tabs.css'
 import '~/components/styles/slider.css'
 import '~/components/styles/toast.css'
+import switchStyles from '~/components/styles/switcher.module.css'
 import { Selector } from '~/components/ui/Selector'
 import { toaster } from '~/utils/toaster'
 
@@ -19,7 +20,7 @@ function EdgeTts() {
   onMount(async () => {
     if (es.voiceInfo.length === 0) {
       const loadingToast = toaster.create({
-        title: 'Loading Voices...',
+        title: 'Loading Edge Voices...',
         type: 'info',
       })
       try {
@@ -27,14 +28,14 @@ function EdgeTts() {
         setEdgeStore('voiceInfo', voiceList)
         setEdgeStore('locales', Array.from(new Set(voiceList.map((i) => i.Locale))).sort())
         toaster.update(loadingToast, {
-          title: 'Voices loaded successfully',
+          title: 'Edge Voices Loaded Successfully',
           type: 'success',
           duration: 5000,
         })
       } catch (err) {
         console.error('Error listing voices:', err)
         toaster.update(loadingToast, {
-          title: 'Error listing voices',
+          title: 'Error Listing Edge Voices',
           type: 'error',
           description: String(err),
         })
@@ -156,6 +157,14 @@ function EdgeTts() {
           placeholder="Please input the text to synthesize..."
         />
       </Field.Root>
+      
+      <Switch.Root class={switchStyles.Root} checked={es.autoSlice} onCheckedChange={(e) => setEdgeStore('autoSlice', e.checked)}>
+        <Switch.Control class={switchStyles.Control}>
+          <Switch.Thumb class={switchStyles.Thumb} />
+        </Switch.Control>
+        <Switch.Label class={switchStyles.Label}>Auto Slice Texts</Switch.Label>
+        <Switch.HiddenInput />
+      </Switch.Root>
 
       <Field.Root>
         <Field.Label>Output Path/Directory</Field.Label>

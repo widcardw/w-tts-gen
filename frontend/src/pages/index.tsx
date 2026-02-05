@@ -5,12 +5,14 @@ import { nativeStore as ns, setNativeStore } from '~/stores/app'
 import { NativeTts, OsService } from '#/bridgetts/services'
 import { VoiceInfo } from '#/bridgetts/services/nativeinvocation'
 import { Button } from '~/components/ui/Button'
-import { Field, Tabs } from '@ark-ui/solid'
+import { Field, Switch, Tabs } from '@ark-ui/solid'
 
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
 import '~/components/styles/tabs.css'
 import '~/components/styles/toast.css'
+import switchStyles from '~/components/styles/switcher.module.css'
+
 import { Selector } from '~/components/ui/Selector'
 
 import { toaster } from '~/utils/toaster'
@@ -167,6 +169,14 @@ function Home() {
           placeholder="Please input the text to synthesize..."
         />
       </Field.Root>
+      
+      <Switch.Root class={switchStyles.Root} checked={ns.autoSlice} onCheckedChange={(e) => setNativeStore('autoSlice', e.checked)}>
+        <Switch.Control class={switchStyles.Control}>
+          <Switch.Thumb class={switchStyles.Thumb} />
+        </Switch.Control>
+        <Switch.Label class={switchStyles.Label}>Auto Slice Texts</Switch.Label>
+        <Switch.HiddenInput />
+      </Switch.Root>
 
       <Field.Root>
         <Field.Label>Output Path/Directory</Field.Label>
@@ -205,7 +215,7 @@ function Home() {
         <Tabs.Content value="default">
           This will invoke the default speaker of your platform (Siri for macOS, Cortana for
           Windows).
-          <Button variant="ghost" onClick={tryListening}>
+          <Button variant="ghost" disabled={ns.isListening || ns.isLoading} onClick={tryListening}>
             <div class="i-ri-volume-up-fill" />
           </Button>
         </Tabs.Content>
@@ -233,7 +243,7 @@ function Home() {
               <Button
                 variant="ghost"
                 disabled={
-                  selectedVoice() === undefined || ns.selLang === '' || ns.selSpeaker === ''
+                  selectedVoice() === undefined || ns.selLang === '' || ns.selSpeaker === '' || ns.isListening
                 }
                 onClick={tryListening}
               >
