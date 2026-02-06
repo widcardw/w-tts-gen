@@ -10,7 +10,6 @@ import { Field, Switch, Tabs } from '@ark-ui/solid'
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
 import '~/components/styles/tabs.css'
-import '~/components/styles/toast.css'
 import switchStyles from '~/components/styles/switcher.module.css'
 
 import { Selector } from '~/components/ui/Selector'

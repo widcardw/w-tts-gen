@@ -11,6 +11,7 @@ import { watchThemeIfAuto, changeTheme } from './utils/theme'
 
 import 'virtual:uno.css'
 import './styles/global.css'
+import toastStyles from './components/styles/toast.module.css'
 import { Toast, Toaster } from '@ark-ui/solid'
 import { toaster } from './utils/toaster'
 
@@ -34,14 +35,14 @@ render(
             <Layout>{props.children}</Layout>
             <Toaster toaster={toaster}>
               {(toast) => (
-                <Toast.Root>
+                <Toast.Root class={toastStyles.Root}>
                   <Show when={toast().title}>
-                    <Toast.Title>{toast().title}</Toast.Title>
+                    <Toast.Title class={toastStyles.Title}>{toast().title}</Toast.Title>
                   </Show>
                   <Show when={toast().description}>
-                    <Toast.Description>{toast().description}</Toast.Description>
+                    <Toast.Description class={toastStyles.Description}>{toast().description}</Toast.Description>
                   </Show>
-                  <Toast.CloseTrigger>
+                  <Toast.CloseTrigger class={toastStyles.CloseTrigger}>
                     <div class="i-ri-close-line" />
                   </Toast.CloseTrigger>
                 </Toast.Root>

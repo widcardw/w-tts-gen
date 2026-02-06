@@ -15,7 +15,7 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
-  color: var(--color-primary-foreground);
+  color: var(--color-text);
   user-select: none;
 }
 
