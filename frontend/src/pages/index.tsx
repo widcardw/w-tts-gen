@@ -81,7 +81,7 @@ function Home() {
     }
     try {
       setNativeStore('isLoading', true)
-      const audioPath = await NativeTts.GenerateSpeech(selectedVoice(), ns.content, ns.outputPath)
+      const audioPath = await NativeTts.GenerateSpeech(selectedVoice(), ns.content, ns.outputPath, ns.autoSlice)
       setNativeStore('finalAudioPath', audioPath)
       toaster.create({
         description: (

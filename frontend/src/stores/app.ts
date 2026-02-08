@@ -31,7 +31,7 @@ const [nativeStore, setNativeStore] = createStore<{
   selLang: '',
   selSpeaker: '',
   isListening: false,
-  autoSlice: false
+  autoSlice: true
 })
 
 class AppConfig {

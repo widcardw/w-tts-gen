@@ -110,6 +110,7 @@ function EdgeTts() {
         (es.pitch < 0 ? '' : '+') + es.pitch + 'Hz',
         es.outputPath,
         es.content,
+        es.autoSlice,
       )
       setEdgeStore('finalAudioPath', audioPath)
       toaster.create({

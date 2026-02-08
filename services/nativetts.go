@@ -1,14 +1,11 @@
 package services
 
 import (
-	// "crypto/md5"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
-
-	// "time"
 
 	ni "bridgetts/services/nativeinvocation"
 )
@@ -51,15 +48,55 @@ func (n *NativeTts) TryListening(v ni.VoiceInfo) error {
 	}
 }
 
-func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string) (string, error) {
+func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, autoSlice bool) (string, error) {
 	goos := runtime.GOOS
 
+	// 如果启用了自动分割
+	if autoSlice {
+		segments := SplitText(s)
+
+		// 如果分割后有多个段落
+		if len(segments) > 1 {
+			// 确定输出文件夹路径
+			var folderPath string
+			if info, err := os.Stat(outputPath); err == nil && info.IsDir() {
+				// outputPath 是目录，在其下创建子文件夹
+				folderPath = filepath.Join(outputPath, GetFolderName(s))
+			} else {
+				// outputPath 是文件或不存在，使用其所在目录创建文件夹
+				parentDir := filepath.Dir(outputPath)
+				folderPath = filepath.Join(parentDir, GetFolderName(s))
+			}
+
+			// 创建文件夹
+			if err := os.MkdirAll(folderPath, 0755); err != nil {
+				return "", fmt.Errorf("failed to create output folder: %w", err)
+			}
+
+			// 逐个生成音频
+			for i, segment := range segments {
+				filename := GetSegmentFileName(i+1, segment)
+				segmentPath := filepath.Join(folderPath, filename)
+
+				_, err := n.generateSingleSpeech(goos, v, segment, segmentPath)
+				if err != nil {
+					return folderPath, fmt.Errorf("failed to generate segment %d: %w", i+1, err)
+				}
+			}
+
+			return folderPath, nil
+		}
+
+		// 分割后只有一段，按不分割处理
+		if len(segments) == 1 {
+			s = segments[0]
+		}
+	}
+
+	// 不分割或分割后只有一段的情况
 	// Check if outputPath is a directory
 	if info, err := os.Stat(outputPath); err == nil && info.IsDir() {
 		// Generate a unique filename based on content hash, timestamp, and extension
-		// contentHash := fmt.Sprintf("%x", md5.Sum([]byte(s)))
-		// timestamp := time.Now().Format("20060102150405")
-		// filename := fmt.Sprintf("tts_%s_%s.wav", contentHash[:8], timestamp)
 		filename := GetFileName(s)
 		outputPath = filepath.Join(outputPath, filename)
 	} else if err != nil && os.IsNotExist(err) {
@@ -70,22 +107,21 @@ func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string) 
 		}
 	}
 
+	return n.generateSingleSpeech(goos, v, s, outputPath)
+}
+
+// generateSingleSpeech 生成单个音频文件
+func (n *NativeTts) generateSingleSpeech(goos string, v ni.VoiceInfo, s string, outputPath string) (string, error) {
 	switch goos {
 	case "darwin":
-		{
-			return ni.DarwinGenerateTts(v, outputPath, s)
-		}
+		return ni.DarwinGenerateTts(v, outputPath, s)
 	case "windows":
-		{
-			return ni.WindowsGenerateTts(v, outputPath, s)
-		}
+		return ni.WindowsGenerateTts(v, outputPath, s)
 	default:
-		{
-			cmd := exec.Command("espeak", s, "-w", outputPath)
-			if err := cmd.Run(); err != nil {
-				return "", err
-			}
-			return outputPath, nil
+		cmd := exec.Command("espeak", s, "-w", outputPath)
+		if err := cmd.Run(); err != nil {
+			return "", err
 		}
+		return outputPath, nil
 	}
 }

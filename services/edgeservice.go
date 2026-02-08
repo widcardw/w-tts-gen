@@ -16,15 +16,54 @@ func (e *EdgeTtsService) ListVoices() ([]edge_tts.Voice, error) {
 	return edge_tts.ListVoices("")
 }
 
-func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p string, outputPath string, content string) (string, error) {
-	
+func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p string, outputPath string, content string, autoSlice bool) (string, error) {
+	// 如果启用了自动分割
+	if autoSlice {
+		segments := SplitText(content)
+
+		// 如果分割后有多个段落
+		if len(segments) > 1 {
+			// 确定输出文件夹路径
+			var folderPath string
+			if info, err := os.Stat(outputPath); err == nil && info.IsDir() {
+				// outputPath 是目录，在其下创建子文件夹
+				folderPath = filepath.Join(outputPath, GetFolderName(content))
+			} else {
+				// outputPath 是文件或不存在，使用其所在目录创建文件夹
+				parentDir := filepath.Dir(outputPath)
+				folderPath = filepath.Join(parentDir, GetFolderName(content))
+			}
+
+			// 创建文件夹
+			if err := os.MkdirAll(folderPath, 0755); err != nil {
+				return "", fmt.Errorf("failed to create output folder: %w", err)
+			}
+
+			// 逐个生成音频
+			for i, segment := range segments {
+				filename := GetSegmentFileName(i+1, segment) + ".mp3"
+				segmentPath := filepath.Join(folderPath, filename)
+
+				err := e.generateSingleSpeech(v, r, vo, p, segmentPath, segment)
+				if err != nil {
+					return folderPath, fmt.Errorf("failed to generate segment %d: %w", i+1, err)
+				}
+			}
+
+			return folderPath, nil
+		}
+
+		// 分割后只有一段，按不分割处理
+		if len(segments) == 1 {
+			content = segments[0]
+		}
+	}
+
+	// 不分割或分割后只有一段的情况
 	if info, err := os.Stat(outputPath); err == nil && info.IsDir() {
 		// Generate a unique filename based on content hash, timestamp, and extension
-		// contentHash := fmt.Sprintf("%x", md5.Sum([]byte(content)))
-		// timestamp := time.Now().Format("20060102150405")
-		// filename := fmt.Sprintf("tts_%s_%s.mp3", contentHash[:8], timestamp)
-		// outputPath = filepath.Join(outputPath, filename)
-		outputPath = GetFileName(content)
+		filename := GetFileName(content) + ".mp3"
+		outputPath = filepath.Join(outputPath, filename)
 	} else if err != nil && os.IsNotExist(err) {
 		// Check if parent directory exists, if not create it
 		parentDir := filepath.Dir(outputPath)
@@ -32,7 +71,12 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 			return "", fmt.Errorf("failed to create parent directory: %w", err)
 		}
 	}
-	
+
+	return outputPath, e.generateSingleSpeech(v, r, vo, p, outputPath, content)
+}
+
+// generateSingleSpeech 生成单个音频文件
+func (e *EdgeTtsService) generateSingleSpeech(v edge_tts.Voice, r string, vo string, p string, outputPath string, content string) error {
 	var rate, volume, pitch = r, vo, p
 	if rate == "" {
 		rate = "+0%"
@@ -56,16 +100,16 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 		connOptions...,
 	)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	audioData, err := conn.Stream()
 	if err != nil {
-		return "", err
+		return err
 	}
 	writeMediaErr := os.WriteFile(outputPath, audioData, 0644)
 	if writeMediaErr != nil {
-		return "", writeMediaErr
+		return writeMediaErr
 	}
-	return outputPath, nil
+	return nil
 }

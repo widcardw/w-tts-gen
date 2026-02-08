@@ -14,10 +14,11 @@ import * as nativeinvocation$0 from "./nativeinvocation/models.js";
  * @param {nativeinvocation$0.VoiceInfo} v
  * @param {string} s
  * @param {string} outputPath
+ * @param {boolean} autoSlice
  * @returns {$CancellablePromise<string>}
  */
-export function GenerateSpeech(v, s, outputPath) {
-    return $Call.ByID(1983586767, v, s, outputPath);
+export function GenerateSpeech(v, s, outputPath, autoSlice) {
+    return $Call.ByID(1983586767, v, s, outputPath, autoSlice);
 }
 
 /**

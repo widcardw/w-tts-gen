@@ -17,10 +17,11 @@ import * as edge_tts$0 from "../../github.com/wujunwei928/edge-tts-go/edge_tts/m
  * @param {string} p
  * @param {string} outputPath
  * @param {string} content
+ * @param {boolean} autoSlice
  * @returns {$CancellablePromise<string>}
  */
-export function GenerateSpeech(v, r, vo, p, outputPath, content) {
-    return $Call.ByID(1821302560, v, r, vo, p, outputPath, content);
+export function GenerateSpeech(v, r, vo, p, outputPath, content, autoSlice) {
+    return $Call.ByID(1821302560, v, r, vo, p, outputPath, content, autoSlice);
 }
 
 /**

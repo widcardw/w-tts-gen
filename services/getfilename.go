@@ -71,3 +71,65 @@ func GetFileName(s string) string {
 		SanitizeFilename(s, 5),
 	)
 }
+
+
+// SplitText 按照逗号、分号、句号或换行分割文本
+func SplitText(s string) []string {
+	// 定义分隔符：逗号、分号、句号、换行
+	separators := []rune{'，', ',', '；', ';', '。', '.', '\n', '\r'}
+
+	var segments []string
+	var current strings.Builder
+
+	for _, r := range s {
+		isSeparator := false
+		for _, sep := range separators {
+			if r == sep {
+				isSeparator = true
+				break
+			}
+		}
+
+		if isSeparator {
+			// 遇到分隔符，保存当前段
+			if current.Len() > 0 {
+				segment := strings.TrimSpace(current.String())
+				if segment != "" {
+					segments = append(segments, segment)
+				}
+				current.Reset()
+			}
+		} else {
+			current.WriteRune(r)
+		}
+	}
+
+	// 处理最后一段
+	if current.Len() > 0 {
+		segment := strings.TrimSpace(current.String())
+		if segment != "" {
+			segments = append(segments, segment)
+		}
+	}
+
+	return segments
+}
+
+// GetSegmentFileName 生成音频片段文件名：编号_内容前5字_时间戳
+func GetSegmentFileName(index int, content string) string {
+	timestamp := time.Now().Format("20060102150405")
+	return fmt.Sprintf("%d_%s_%s",
+		index,
+		SanitizeFilename(content, 5),
+		timestamp,
+	)
+}
+
+// GetFolderName 生成文件夹名：tts_前几个字摘要_时间戳
+func GetFolderName(s string) string {
+	timestamp := time.Now().Format("20060102150405")
+	return fmt.Sprintf("tts_%s_%s",
+		SanitizeFilename(s, 10),
+		timestamp,
+	)
+}

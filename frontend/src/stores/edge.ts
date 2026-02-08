@@ -32,7 +32,7 @@ const [edgeStore, setEdgeStore] = createStore<{
   rate: 0,
   volume: 0,
   pitch: 0,
-  autoSlice: false,
+  autoSlice: true,
 })
 
 export { edgeStore, setEdgeStore }
