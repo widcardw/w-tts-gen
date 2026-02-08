@@ -258,7 +258,9 @@ function Home() {
           onClick={generateTtsNative}
           disabled={ns.content.trim() === '' || ns.outputPath === '' || ns.isLoading}
         >
-          Generate
+          <Show when={ns.progress.total !== 0 && ns.progress.total !== ns.progress.finished} fallback="Generate">
+            Generating ({ns.progress.finished}/{ns.progress.total})
+          </Show>
         </Button>
       </div>
     </div>

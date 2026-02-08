@@ -8,6 +8,8 @@ import (
 	"runtime"
 
 	ni "bridgetts/services/nativeinvocation"
+
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 type NativeTts struct{}
@@ -50,6 +52,8 @@ func (n *NativeTts) TryListening(v ni.VoiceInfo) error {
 
 func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, autoSlice bool) (string, error) {
 	goos := runtime.GOOS
+	
+	app := application.Get()
 
 	// 如果启用了自动分割
 	if autoSlice {
@@ -82,6 +86,10 @@ func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, 
 				if err != nil {
 					return folderPath, fmt.Errorf("failed to generate segment %d: %w", i+1, err)
 				}
+				app.Event.Emit("progress:native", ProgressEvent{
+					finished: i+1,
+					total: len(segments),
+				})
 			}
 
 			return folderPath, nil

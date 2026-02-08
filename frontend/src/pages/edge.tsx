@@ -1,4 +1,4 @@
-import { createMemo, onMount } from 'solid-js'
+import { createMemo, onMount, Show } from 'solid-js'
 import { edgeStore as es, setEdgeStore } from '../stores/edge'
 import { EdgeTtsService, OsService } from '#/bridgetts/services'
 import { Voice } from '#/github.com/wujunwei928/edge-tts-go/edge_tts'
@@ -330,7 +330,9 @@ function EdgeTts() {
           onClick={generateTtsEdge}
           disabled={es.content.trim() === '' || es.outputPath === '' || es.isLoading}
         >
-          Generate
+          <Show when={es.progress.total !== 0 && es.progress.total !== es.progress.finished} fallback="Generate">
+            Generating ({es.progress.finished}/{es.progress.total})
+          </Show>
         </Button>
       </div>
     </div>

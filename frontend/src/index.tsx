@@ -3,7 +3,7 @@ import { render, Suspense } from 'solid-js/web'
 import { Router } from '@solidjs/router'
 import routes from '~solid-pages'
 import Layout from './components/Layout'
-import { onMount, Show } from 'solid-js'
+import { onCleanup, onMount, Show } from 'solid-js'
 import { ConfigService } from '#/bridgetts/services'
 import { AppConfig, setConfigStore, setNativeStore } from './stores/app'
 import { setEdgeStore } from './stores/edge'
@@ -14,6 +14,8 @@ import './styles/global.css'
 import toastStyles from './components/styles/toast.module.css'
 import { Toast, Toaster } from '@ark-ui/solid'
 import { toaster } from './utils/toaster'
+
+import {Events} from '@wailsio/runtime'
 
 render(
   () => {
@@ -26,6 +28,23 @@ render(
       setEdgeStore('outputPath', conf.defaultSaveDir)
       changeTheme(conf.theme as 'auto' | 'light' | 'dark')
       watchThemeIfAuto()
+    })
+    
+    const cleanupNativeProgressListener = Events.On('progress:native', (data) => {
+      console.log('event', data)
+      setNativeStore('progress', 'finished', data.data.finished)
+      setNativeStore('progress', 'total', data.data.total)
+    })
+    
+    const cleanupEdgeProgressListener = Events.On('progress:edge', (data) => {
+      console.log('event', data)
+      setEdgeStore('progress', 'finished', data.data.finished)
+      setEdgeStore('progress', 'total', data.data.total)
+    })
+    
+    onCleanup(() => {
+      cleanupNativeProgressListener()
+      cleanupEdgeProgressListener()
     })
 
     return (

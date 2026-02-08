@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
 	// "time"
 
+	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wujunwei928/edge-tts-go/edge_tts"
 )
 
@@ -20,6 +22,8 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 	// 如果启用了自动分割
 	if autoSlice {
 		segments := SplitText(content)
+		
+		app := application.Get()
 
 		// 如果分割后有多个段落
 		if len(segments) > 1 {
@@ -48,6 +52,10 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 				if err != nil {
 					return folderPath, fmt.Errorf("failed to generate segment %d: %w", i+1, err)
 				}
+				app.Event.Emit("progress:edge", ProgressEvent{
+					finished: i+1,
+					total: len(segments),
+				})
 			}
 
 			return folderPath, nil

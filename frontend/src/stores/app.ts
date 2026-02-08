@@ -17,6 +17,10 @@ const [nativeStore, setNativeStore] = createStore<{
   selSpeaker: string
   isListening: boolean
   autoSlice: boolean
+  progress: {
+    finished: number
+    total: number
+  }
 }>({
   leadingMsg: { msg: '', color: '' },
   content: '',
@@ -31,7 +35,11 @@ const [nativeStore, setNativeStore] = createStore<{
   selLang: '',
   selSpeaker: '',
   isListening: false,
-  autoSlice: true
+  autoSlice: false,
+  progress: {
+    finished: 0,
+    total: 0,
+  },
 })
 
 class AppConfig {

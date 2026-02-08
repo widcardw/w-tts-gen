@@ -17,6 +17,10 @@ const [edgeStore, setEdgeStore] = createStore<{
   volume: number
   pitch: number
   autoSlice: boolean
+  progress: {
+    finished: number
+    total: number
+  }
 }>({
   leadingMsg: { msg: '', color: '' },
   content: '',
@@ -32,7 +36,11 @@ const [edgeStore, setEdgeStore] = createStore<{
   rate: 0,
   volume: 0,
   pitch: 0,
-  autoSlice: true,
+  autoSlice: false,
+  progress: {
+    finished: 0,
+    total: 0,
+  },
 })
 
 export { edgeStore, setEdgeStore }
