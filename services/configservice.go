@@ -15,8 +15,10 @@ import (
 type ConfigService struct{}
 
 var Config = &AppConfig{
-	Compress: false,
-	Theme:    "auto",
+	Theme:           "auto",
+	NativeAutoSlice: false,
+	NativeCompress:  true,
+	EdgeAutoSlice:   false,
 }
 
 func GetPath(path string) string {
@@ -45,9 +47,11 @@ func createConfigDir() string {
 	}
 	return confDir
 }
-
 func (c *ConfigService) WriteConfig(conf *AppConfig) (string, error) {
-	Config.Compress = conf.Compress
+	Config.NativeCompress = conf.NativeCompress
+	Config.NativeAutoSlice = conf.NativeAutoSlice
+	Config.EdgeAutoSlice = conf.EdgeAutoSlice
+
 	Config.DefaultSaveDir = conf.DefaultSaveDir
 	Config.Theme = conf.Theme
 	yBytes, err := yaml.Marshal(&Config)

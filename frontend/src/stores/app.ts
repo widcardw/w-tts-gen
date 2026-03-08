@@ -1,6 +1,6 @@
-import { createSignal } from 'solid-js'
+// import { createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { VoiceInfo } from '../../bindings/bridgetts/services/nativeinvocation'
+import { VoiceInfo } from '#/bridgetts/services/nativeinvocation'
 
 const [nativeStore, setNativeStore] = createStore<{
   leadingMsg: { msg: string; color: string }
@@ -17,6 +17,7 @@ const [nativeStore, setNativeStore] = createStore<{
   selSpeaker: string
   isListening: boolean
   autoSlice: boolean
+  compress: boolean
   progress: {
     finished: number
     total: number
@@ -36,6 +37,7 @@ const [nativeStore, setNativeStore] = createStore<{
   selSpeaker: '',
   isListening: false,
   autoSlice: false,
+  compress: false,
   progress: {
     finished: 0,
     total: 0,
@@ -43,9 +45,11 @@ const [nativeStore, setNativeStore] = createStore<{
 })
 
 class AppConfig {
-  compress = false
   defaultSaveDir = ''
   theme = 'auto'
+  nativeAutoSlice = false
+  nativeCompress = true
+  edgeAutoSlice = false
   constructor(source = {}) {
     Object.assign(this, source)
   }
@@ -55,12 +59,12 @@ class AppConfig {
 }
 
 const [configStore, setConfigStore] = createStore<AppConfig>({
-  compress: false,
   defaultSaveDir: '',
   theme: 'auto',
+  nativeAutoSlice: false,
+  nativeCompress: true,
+  edgeAutoSlice: false,
 })
 
-const [configChanged, setConfigChanged] = createSignal(false)
-
-export { nativeStore, setNativeStore, configStore, setConfigStore, configChanged, setConfigChanged }
+export { nativeStore, setNativeStore, configStore, setConfigStore }
 export { AppConfig }

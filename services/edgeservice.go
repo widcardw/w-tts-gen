@@ -22,7 +22,7 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 	// 如果启用了自动分割
 	if autoSlice {
 		segments := SplitText(content)
-		
+
 		app := application.Get()
 
 		// 如果分割后有多个段落
@@ -53,8 +53,8 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 					return folderPath, fmt.Errorf("failed to generate segment %d: %w", i+1, err)
 				}
 				app.Event.Emit("progress:edge", ProgressEvent{
-					finished: i+1,
-					total: len(segments),
+					finished: i + 1,
+					total:    len(segments),
 				})
 			}
 

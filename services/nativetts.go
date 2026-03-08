@@ -50,9 +50,9 @@ func (n *NativeTts) TryListening(v ni.VoiceInfo) error {
 	}
 }
 
-func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, autoSlice bool) (string, error) {
+func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, autoSlice bool, compress bool) (string, error) {
 	goos := runtime.GOOS
-	
+
 	app := application.Get()
 
 	// 如果启用了自动分割
@@ -77,21 +77,21 @@ func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, 
 				return "", fmt.Errorf("failed to create output folder: %w", err)
 			}
 
-	// 逐个生成音频
-	for i, segment := range segments {
-		filename := GetSegmentFileName(i+1, segment)
-		segmentPath := filepath.Join(folderPath, filename)
+			// 逐个生成音频
+			for i, segment := range segments {
+				filename := GetSegmentFileName(i+1, segment)
+				segmentPath := filepath.Join(folderPath, filename)
 
-		_, err := n.generateSingleSpeech(goos, v, segment, segmentPath)
-		if err != nil {
-			// 即使有错误也返回 folderPath，因为可能只是转换失败但文件已生成
-			return folderPath, err
-		}
-		app.Event.Emit("progress:native", ProgressEvent{
-			finished: i+1,
-			total: len(segments),
-		})
-	}
+				_, err := n.generateSingleSpeech(goos, v, segment, segmentPath, compress)
+				if err != nil {
+					// 即使有错误也返回 folderPath，因为可能只是转换失败但文件已生成
+					return folderPath, err
+				}
+				app.Event.Emit("progress:native", ProgressEvent{
+					finished: i + 1,
+					total:    len(segments),
+				})
+			}
 
 			return folderPath, nil
 		}
@@ -116,16 +116,28 @@ func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, 
 		}
 	}
 
-	return n.generateSingleSpeech(goos, v, s, outputPath)
+	return n.generateSingleSpeech(goos, v, s, outputPath, compress)
+}
+
+// CheckFFmpegAvailable 检查 FFmpeg 是否可用
+func (n *NativeTts) CheckFFmpegAvailable() bool {
+	// macOS 不需要 FFmpeg，使用系统的 afconvert
+	if runtime.GOOS == "darwin" {
+		return true
+	}
+
+	// Windows 和 Linux 需要 FFmpeg
+	_, err := exec.LookPath("ffmpeg")
+	return err == nil
 }
 
 // generateSingleSpeech 生成单个音频文件
-func (n *NativeTts) generateSingleSpeech(goos string, v ni.VoiceInfo, s string, outputPath string) (string, error) {
+func (n *NativeTts) generateSingleSpeech(goos string, v ni.VoiceInfo, s string, outputPath string, compress bool) (string, error) {
 	switch goos {
 	case "darwin":
-		return ni.DarwinGenerateTts(v, outputPath, s, Config.Compress)
+		return ni.DarwinGenerateTts(v, outputPath, s, compress)
 	case "windows":
-		return ni.WindowsGenerateTts(v, outputPath, s, Config.Compress)
+		return ni.WindowsGenerateTts(v, outputPath, s, compress)
 	default:
 		cmd := exec.Command("espeak", s, "-w", outputPath)
 		if err := cmd.Run(); err != nil {

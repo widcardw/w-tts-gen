@@ -1,4 +1,5 @@
 import { createMemo, onMount, Show } from 'solid-js'
+import { configStore, setConfigStore } from '../stores/app'
 import { edgeStore as es, setEdgeStore } from '../stores/edge'
 import { EdgeTtsService, OsService } from '#/bridgetts/services'
 import { Voice } from '#/github.com/wujunwei928/edge-tts-go/edge_tts'
@@ -14,9 +15,13 @@ import '~/components/styles/slider.css'
 import switchStyles from '~/components/styles/switcher.module.css'
 import { Selector } from '~/components/ui/Selector'
 import { toaster } from '~/utils/toaster'
+import { saveConfig } from '~/utils/config'
 
 function EdgeTts() {
   onMount(async () => {
+    // 从已加载的 configStore 中读取 edgeAutoSlice 设置
+    setEdgeStore('autoSlice', configStore.edgeAutoSlice)
+
     if (es.voiceInfo.length === 0) {
       const loadingToast = toaster.create({
         title: 'Loading Edge Voices...',
@@ -145,6 +150,8 @@ function EdgeTts() {
     }
   }
 
+
+
   return (
     <div class="space-y-6 mx-auto">
       <Field.Root>
@@ -161,7 +168,11 @@ function EdgeTts() {
       <Switch.Root
         class={switchStyles.Root}
         checked={es.autoSlice}
-        onCheckedChange={(e) => setEdgeStore('autoSlice', e.checked)}
+        onCheckedChange={(e) => {
+          setEdgeStore('autoSlice', e.checked)
+          setConfigStore('edgeAutoSlice', e.checked)
+          saveConfig()
+        }}
       >
         <Switch.Control class={switchStyles.Control}>
           <Switch.Thumb class={switchStyles.Thumb} />

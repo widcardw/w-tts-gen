@@ -1,76 +1,24 @@
-import { createSignal, For, Show } from 'solid-js'
-import clsx from 'clsx'
-import {
-  configStore as cs,
-  setConfigStore,
-  configChanged,
-  setConfigChanged,
-  AppConfig,
-  configStore,
-  setNativeStore,
-} from '~/stores/app'
-import { setEdgeStore } from '~/stores/edge'
-import { ConfigService, OsService } from '#/bridgetts/services'
+import { For } from 'solid-js'
+import { configStore as cs, setConfigStore, configStore } from '~/stores/app'
+// import { OsService } from '#/bridgetts/services'
 import { changeTheme } from '~/utils/theme'
-import { Browser, Dialogs } from '@wailsio/runtime'
+import { Dialogs } from '@wailsio/runtime'
 import { Button } from '~/components/ui/Button'
-import { Field, RadioGroup, Checkbox } from '@ark-ui/solid'
+import { Field, RadioGroup } from '@ark-ui/solid'
 
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
-import '~/components/styles/checkbox.css'
-import { toaster } from '~/utils/toaster'
+import { saveConfig, updateOutputPath } from '~/utils/config'
 
 function Settings() {
-  const [isLoading, setLoading] = createSignal(false)
-
-  async function tryToSaveConfig() {
-    setLoading(true)
-    try {
-      const msg = await ConfigService.WriteConfig(
-        new AppConfig({
-          compress: configStore.compress,
-          defaultSaveDir: configStore.defaultSaveDir,
-          theme: configStore.theme,
-        }),
-      )
-      toaster.create({
-        title: 'Success',
-        description: (
-          <>
-            Saved config at <code class="text-sm">{msg}</code>.{' '}
-            <a
-              class="cursor-pointer inline-flex items-center gap-1"
-              onClick={async () => {
-                await OsService.OpenFolder(msg)
-              }}
-            >
-              Open <div class="w-3 h-3 i-ri-external-link-line" />
-            </a>
-          </>
-        ),
-        type: 'success',
-      })
-      setConfigChanged(false)
-      setNativeStore('outputPath', configStore.defaultSaveDir)
-      setEdgeStore('outputPath', configStore.defaultSaveDir)
-    } catch (e) {
-      toaster.create({
-        title: 'Error',
-        description: `Error occurred at ${String(e)}!`,
-        type: 'error',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
+  // const [isLoading, setLoading] = createSignal(false)
 
   const themeChoices = ['auto', 'light', 'dark']
 
   function handleThemeChange(t: 'auto' | 'light' | 'dark') {
     setConfigStore('theme', t)
-    setConfigChanged(true)
     changeTheme(t)
+    saveConfig()
   }
   // async function openDevTools() {
   //   await ConfigService.OpenDevTools()
@@ -86,49 +34,12 @@ function Settings() {
       })
       if (selectedPath.trim() !== '') {
         setConfigStore('defaultSaveDir', selectedPath)
-        setConfigChanged(true)
+        updateOutputPath(selectedPath)
+        saveConfig()
       }
     } catch (e) {
-      toaster.create({
-        title: 'Error',
-        description: 'Failed to select path! ' + String(e),
-        type: 'error',
-      })
+      console.error('Failed to select path:', e)
     }
-  }
-
-  async function handleCompressChange(checked: boolean) {
-    // 如果用户想要启用压缩
-    if (checked) {
-      // 检查 FFmpeg 是否可用
-      const ffmpegAvailable = await ConfigService.CheckFFmpegAvailable()
-
-      if (!ffmpegAvailable) {
-        // FFmpeg 不可用，显示确认对话框
-        const shouldOpen = await Dialogs.Question({
-          Title: 'Cannot find FFmpeg',
-          Message:
-            'If you want to enable compression, you need to install FFmpeg.\n\nDo you want to open the FFmpeg download page?',
-          Buttons: [
-            { Label: 'Yes', IsDefault: true, IsCancel: false },
-            { Label: 'No', IsDefault: false, IsCancel: true },
-          ],
-        })
-
-        if (shouldOpen) {
-          // 打开 FFmpeg 下载页面
-          Browser.OpenURL('https://getffmpeg.org/')
-        }
-
-        // 不勾选选项
-        setConfigStore('compress', false)
-        return
-      }
-    }
-
-    // FFmpeg 可用或者用户想要关闭压缩，正常处理
-    setConfigStore('compress', checked)
-    setConfigChanged(true)
   }
 
   return (
@@ -153,24 +64,6 @@ function Settings() {
           )}
         </For>
       </RadioGroup.Root>
-      <Checkbox.Root
-        class="w-full"
-        checked={cs.compress}
-        onCheckedChange={(e) => handleCompressChange(Boolean(e.checked))}
-      >
-        <Checkbox.Label class="flex-1">
-          Compress (The generated audio will be converted into <span class="font-mono">aac</span>{' '}
-          format.)
-        </Checkbox.Label>
-        <Checkbox.Control>
-          <Checkbox.Indicator>
-            <Show when={cs.compress}>
-              <div class="i-ri-check-line text-white" />
-            </Show>
-          </Checkbox.Indicator>
-        </Checkbox.Control>
-        <Checkbox.HiddenInput />
-      </Checkbox.Root>
       <Field.Root>
         <Field.Label>Default Save Path</Field.Label>
         <div class="flex gap-4 w-full">
@@ -178,24 +71,15 @@ function Settings() {
             class="font-mono text-sm flex-1"
             value={cs.defaultSaveDir}
             onInput={(v) => {
-              setConfigChanged(true)
               setConfigStore('defaultSaveDir', v.target.value)
+              updateOutputPath(v.target.value)
+              saveConfig()
             }}
           />
           <Button onClick={chooseDefaultPath}>Choose</Button>
         </div>
         <Field.HelperText>The default path to save your audios</Field.HelperText>
       </Field.Root>
-
-      <div class={clsx('flex justify-end items-center space-x-4')}>
-        <Button
-          disabled={isLoading()}
-          variant={configChanged() ? 'default' : 'secondary'}
-          onClick={tryToSaveConfig}
-        >
-          Save
-        </Button>
-      </div>
     </div>
   )
 }

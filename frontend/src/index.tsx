@@ -21,7 +21,9 @@ render(
   () => {
     onMount(async () => {
       const conf: AppConfig = await ConfigService.ReadConfig()
-      setConfigStore('compress', conf.compress)
+      setConfigStore('nativeCompress', conf.nativeCompress)
+      setConfigStore('nativeAutoSlice', conf.nativeAutoSlice)
+      setConfigStore('edgeAutoSlice', conf.edgeAutoSlice)
       setConfigStore('defaultSaveDir', conf.defaultSaveDir)
       setConfigStore('theme', conf.theme)
       setNativeStore('outputPath', conf.defaultSaveDir)

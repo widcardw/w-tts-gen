@@ -1,7 +1,12 @@
 import { Show, createMemo, onMount } from 'solid-js'
-import { Dialogs } from '@wailsio/runtime'
+import { Browser, Dialogs } from '@wailsio/runtime'
 
-import { nativeStore as ns, setNativeStore } from '~/stores/app'
+import {
+  nativeStore as ns,
+  setNativeStore,
+  configStore,
+  setConfigStore,
+} from '~/stores/app'
 import { NativeTts, OsService } from '#/bridgetts/services'
 import { VoiceInfo } from '#/bridgetts/services/nativeinvocation'
 import { Button } from '~/components/ui/Button'
@@ -15,6 +20,7 @@ import switchStyles from '~/components/styles/switcher.module.css'
 import { Selector } from '~/components/ui/Selector'
 
 import { toaster } from '~/utils/toaster'
+import { saveConfig } from '~/utils/config'
 
 function Home() {
   async function getVoices() {
@@ -53,6 +59,12 @@ function Home() {
     if (ns.voiceInfo.length === 0) {
       await getVoices()
     }
+
+    // 从已加载的 configStore 中读取 autoSlice 和 compress 设置
+    setNativeStore('autoSlice', configStore.nativeAutoSlice)
+    if (await NativeTts.CheckFFmpegAvailable()){
+      setNativeStore('compress', configStore.nativeCompress)
+    }
   })
 
   async function ChooseOutputDialog() {
@@ -86,12 +98,13 @@ function Home() {
         ns.content,
         ns.outputPath,
         ns.autoSlice,
+        ns.compress,
       )
       setNativeStore('finalAudioPath', audioPath)
       toaster.create({
         description: (
           <>
-            File saved at <span class="font-mono">{ns.finalAudioPath}</span>.{' '}
+            File saved at <span class="font-mono break-all">{ns.finalAudioPath}</span>.{' '}
             <a
               class="cursor-pointer inline-flex items-center gap-1"
               onClick={async () => {
@@ -161,6 +174,8 @@ function Home() {
     }
   }
 
+
+
   return (
     <div class="space-y-6 mx-auto">
       <Field.Root>
@@ -174,17 +189,64 @@ function Home() {
         />
       </Field.Root>
 
-      <Switch.Root
-        class={switchStyles.Root}
-        checked={ns.autoSlice}
-        onCheckedChange={(e) => setNativeStore('autoSlice', e.checked)}
-      >
-        <Switch.Control class={switchStyles.Control}>
-          <Switch.Thumb class={switchStyles.Thumb} />
-        </Switch.Control>
-        <Switch.Label class={switchStyles.Label}>Auto Slice Texts</Switch.Label>
-        <Switch.HiddenInput />
-      </Switch.Root>
+      <div class="flex gap-6">
+        <Switch.Root
+          class={switchStyles.Root}
+          checked={ns.autoSlice}
+          onCheckedChange={(e) => {
+            setNativeStore('autoSlice', e.checked)
+            setConfigStore('nativeAutoSlice', e.checked)
+            saveConfig()
+          }}
+        >
+          <Switch.Control class={switchStyles.Control}>
+            <Switch.Thumb class={switchStyles.Thumb} />
+          </Switch.Control>
+          <Switch.Label class={switchStyles.Label}>Auto Slice Texts</Switch.Label>
+          <Switch.HiddenInput />
+        </Switch.Root>
+
+        <Switch.Root
+          class={switchStyles.Root}
+          checked={ns.compress}
+          onCheckedChange={async (e) => {
+            if (e.checked) {
+              // 检查 FFmpeg 是否可用
+              const ffmpegAvailable = await NativeTts.CheckFFmpegAvailable()
+
+              if (!ffmpegAvailable) {
+                // FFmpeg 不可用，显示确认对话框
+                const shouldOpen = await Dialogs.Question({
+                  Title: 'FFmpeg 未找到',
+                  Message: '要使用压缩功能，需要安装 FFmpeg。\n\n是否打开 FFmpeg 下载页面？',
+                  Buttons: [
+                    { Label: 'Yes', IsDefault: true, IsCancel: false },
+                    { Label: 'No', IsDefault: false, IsCancel: true },
+                  ],
+                })
+
+                if (shouldOpen === 'Yes') {
+                  Browser.OpenURL('https://getffmpeg.org/')
+                }
+                // 不勾选选项
+                setNativeStore('compress', false)
+                return
+              }
+            }
+            setNativeStore('compress', e.checked)
+            setConfigStore('nativeCompress', e.checked)
+            saveConfig()
+          }}
+        >
+          <Switch.Control class={switchStyles.Control}>
+            <Switch.Thumb class={switchStyles.Thumb} />
+          </Switch.Control>
+          <Switch.Label class={switchStyles.Label}>
+            Compress (Convert to <span class="font-mono">aac</span> format)
+          </Switch.Label>
+          <Switch.HiddenInput />
+        </Switch.Root>
+      </div>
 
       <Field.Root>
         <Field.Label>Output Path/Directory</Field.Label>
