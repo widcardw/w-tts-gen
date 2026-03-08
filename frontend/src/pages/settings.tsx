@@ -1,6 +1,6 @@
 import { For } from 'solid-js'
 import { configStore as cs, setConfigStore, configStore } from '~/stores/app'
-// import { OsService } from '#/bridgetts/services'
+import { ConfigService } from '#/bridgetts/services'
 import { changeTheme } from '~/utils/theme'
 import { Dialogs } from '@wailsio/runtime'
 import { Button } from '~/components/ui/Button'
@@ -80,6 +80,9 @@ function Settings() {
         </div>
         <Field.HelperText>The default path to save your audios</Field.HelperText>
       </Field.Root>
+      <div class="flex items-center justify-between">
+        Config File <Button onClick={() => ConfigService.OpenConfigDir()}>Open</Button>
+      </div>
     </div>
   )
 }

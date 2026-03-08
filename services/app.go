@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/wujunwei928/edge-tts-go/edge_tts"
 	"runtime"
 )
 
@@ -27,9 +28,10 @@ var Env = &EnvResult{
 }
 
 type AppConfig struct {
-	DefaultSaveDir  string `json:"defaultSaveDir"`
-	Theme           string `json:"theme"`
-	NativeAutoSlice bool   `json:"nativeAutoSlice"`
-	NativeCompress  bool   `json:"nativeCompress"`
-	EdgeAutoSlice   bool   `json:"edgeAutoSlice"`
+	DefaultSaveDir      string           `json:"defaultSaveDir"`
+	Theme               string           `json:"theme"`
+	NativeAutoSlice     bool             `json:"nativeAutoSlice"`
+	NativeCompress      bool             `json:"nativeCompress"`
+	EdgeAutoSlice       bool             `json:"edgeAutoSlice"`
+	EdgeCachedVoiceInfo []edge_tts.Voice `json:"edgeCachedVoiceInfo"`
 }

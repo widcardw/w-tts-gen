@@ -9,16 +9,18 @@ import (
 	"runtime"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wujunwei928/edge-tts-go/edge_tts"
 	"gopkg.in/yaml.v3"
 )
 
 type ConfigService struct{}
 
 var Config = &AppConfig{
-	Theme:           "auto",
-	NativeAutoSlice: false,
-	NativeCompress:  true,
-	EdgeAutoSlice:   false,
+	Theme:               "auto",
+	NativeAutoSlice:     false,
+	NativeCompress:      true,
+	EdgeAutoSlice:       false,
+	EdgeCachedVoiceInfo: make([]edge_tts.Voice, 0),
 }
 
 func GetPath(path string) string {

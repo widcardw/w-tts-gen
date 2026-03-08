@@ -1,7 +1,7 @@
-import { createMemo, onMount, Show } from 'solid-js'
-import { configStore, setConfigStore } from '../stores/app'
+import { createMemo, createSignal, onMount, Show } from 'solid-js'
+import { configStore, setConfigStore, AppConfig } from '../stores/app'
 import { edgeStore as es, setEdgeStore } from '../stores/edge'
-import { EdgeTtsService, OsService } from '#/bridgetts/services'
+import { EdgeTtsService, OsService, ConfigService } from '#/bridgetts/services'
 import { Voice } from '#/github.com/wujunwei928/edge-tts-go/edge_tts'
 import { Dialogs } from '@wailsio/runtime'
 import { Accessor } from 'solid-js'
@@ -16,35 +16,46 @@ import switchStyles from '~/components/styles/switcher.module.css'
 import { Selector } from '~/components/ui/Selector'
 import { toaster } from '~/utils/toaster'
 import { saveConfig } from '~/utils/config'
+import clsx from 'clsx'
 
 function EdgeTts() {
+  const [isLoading, setIsLoading] = createSignal(false)
+  async function fetchVoices() {
+    setIsLoading(true)
+    const loadingToast = toaster.create({
+      title: 'Loading Edge Voices...',
+      type: 'info',
+    })
+    try {
+      const voiceList: Voice[] = await EdgeTtsService.ListVoices(true)
+      setEdgeStore('voiceInfo', voiceList)
+      setEdgeStore('locales', Array.from(new Set(voiceList.map((i) => i.Locale))).sort())
+
+      // 重新读取配置以获取更新后的缓存数据
+      const conf: AppConfig = await ConfigService.ReadConfig()
+      setConfigStore('edgeCachedVoiceInfo', conf.edgeCachedVoiceInfo)
+
+      toaster.update(loadingToast, {
+        title: 'Edge Voices Loaded Successfully',
+        type: 'success',
+        duration: 5000,
+      })
+    } catch (err) {
+      console.error('Error listing voices:', err)
+      toaster.update(loadingToast, {
+        title: 'Error Listing Edge Voices',
+        type: 'error',
+        description: String(err),
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   onMount(async () => {
     // 从已加载的 configStore 中读取 edgeAutoSlice 设置
     setEdgeStore('autoSlice', configStore.edgeAutoSlice)
-
-    if (es.voiceInfo.length === 0) {
-      const loadingToast = toaster.create({
-        title: 'Loading Edge Voices...',
-        type: 'info',
-      })
-      try {
-        const voiceList: Voice[] = await EdgeTtsService.ListVoices()
-        setEdgeStore('voiceInfo', voiceList)
-        setEdgeStore('locales', Array.from(new Set(voiceList.map((i) => i.Locale))).sort())
-        toaster.update(loadingToast, {
-          title: 'Edge Voices Loaded Successfully',
-          type: 'success',
-          duration: 5000,
-        })
-      } catch (err) {
-        console.error('Error listing voices:', err)
-        toaster.update(loadingToast, {
-          title: 'Error Listing Edge Voices',
-          type: 'error',
-          description: String(err),
-        })
-      }
-    }
+    console.log(configStore.edgeAutoSlice)
   })
 
   const selectedVoice: Accessor<Voice> = createMemo(() => {
@@ -150,8 +161,6 @@ function EdgeTts() {
     }
   }
 
-
-
   return (
     <div class="space-y-6 mx-auto">
       <Field.Root>
@@ -165,21 +174,27 @@ function EdgeTts() {
         />
       </Field.Root>
 
-      <Switch.Root
-        class={switchStyles.Root}
-        checked={es.autoSlice}
-        onCheckedChange={(e) => {
-          setEdgeStore('autoSlice', e.checked)
-          setConfigStore('edgeAutoSlice', e.checked)
-          saveConfig()
-        }}
-      >
-        <Switch.Control class={switchStyles.Control}>
-          <Switch.Thumb class={switchStyles.Thumb} />
-        </Switch.Control>
-        <Switch.Label class={switchStyles.Label}>Auto Slice Texts</Switch.Label>
-        <Switch.HiddenInput />
-      </Switch.Root>
+      <div class="flex gap-6">
+        <Switch.Root
+          class={switchStyles.Root}
+          checked={es.autoSlice}
+          onCheckedChange={(e) => {
+            setEdgeStore('autoSlice', e.checked)
+            setConfigStore('edgeAutoSlice', e.checked)
+            saveConfig()
+          }}
+        >
+          <Switch.Control class={switchStyles.Control}>
+            <Switch.Thumb class={switchStyles.Thumb} />
+          </Switch.Control>
+          <Switch.Label class={switchStyles.Label}>Auto Slice Texts</Switch.Label>
+          <Switch.HiddenInput />
+        </Switch.Root>
+        <Button variant="ghost" disabled={isLoading()} onClick={fetchVoices}>
+          <div class={clsx('i-ri-refresh-line', isLoading() && 'animate-spin')} />
+          Refresh Voices
+        </Button>
+      </div>
 
       <Field.Root>
         <Field.Label>Output Path/Directory</Field.Label>

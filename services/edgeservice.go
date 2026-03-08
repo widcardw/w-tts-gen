@@ -10,12 +10,45 @@ import (
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wujunwei928/edge-tts-go/edge_tts"
+	"gopkg.in/yaml.v3"
 )
 
 type EdgeTtsService struct{}
 
-func (e *EdgeTtsService) ListVoices() ([]edge_tts.Voice, error) {
-	return edge_tts.ListVoices("")
+func (e *EdgeTtsService) ListVoices(force bool) ([]edge_tts.Voice, error) {
+	if force || len(Config.EdgeCachedVoiceInfo) == 0 {
+		voices, err := edge_tts.ListVoices("")
+		if err != nil {
+			return nil, err
+		}
+		Config.EdgeCachedVoiceInfo = voices
+		// 保存配置到文件
+		if err := saveEdgeVoicesConfig(); err != nil {
+			fmt.Printf("Failed to save config: %v\n", err)
+		}
+	}
+	return Config.EdgeCachedVoiceInfo, nil
+}
+
+// saveEdgeVoicesConfig 保存配置到文件
+func saveEdgeVoicesConfig() error {
+	yBytes, err := yaml.Marshal(&Config)
+	if err != nil {
+		return fmt.Errorf("failed to encode config into yaml: %w", err)
+	}
+
+	confDir := GetPath("W-TTS")
+	if _, err := os.Stat(confDir); err != nil && os.IsNotExist(err) {
+		if err := os.MkdirAll(confDir, os.ModePerm); err != nil {
+			return fmt.Errorf("failed to create config dir: %w", err)
+		}
+	}
+
+	confPath := GetPath("W-TTS/config.yml")
+	if err := os.WriteFile(confPath, yBytes, os.ModePerm); err != nil {
+		return fmt.Errorf("failed to write config to file: %w", err)
+	}
+	return nil
 }
 
 func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p string, outputPath string, content string, autoSlice bool) (string, error) {

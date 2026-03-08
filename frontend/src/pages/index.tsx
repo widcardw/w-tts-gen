@@ -1,12 +1,7 @@
 import { Show, createMemo, onMount } from 'solid-js'
 import { Browser, Dialogs } from '@wailsio/runtime'
 
-import {
-  nativeStore as ns,
-  setNativeStore,
-  configStore,
-  setConfigStore,
-} from '~/stores/app'
+import { nativeStore as ns, setNativeStore, configStore, setConfigStore } from '~/stores/app'
 import { NativeTts, OsService } from '#/bridgetts/services'
 import { VoiceInfo } from '#/bridgetts/services/nativeinvocation'
 import { Button } from '~/components/ui/Button'
@@ -62,7 +57,7 @@ function Home() {
 
     // 从已加载的 configStore 中读取 autoSlice 和 compress 设置
     setNativeStore('autoSlice', configStore.nativeAutoSlice)
-    if (await NativeTts.CheckFFmpegAvailable()){
+    if (await NativeTts.CheckFFmpegAvailable()) {
       setNativeStore('compress', configStore.nativeCompress)
     }
   })
@@ -173,8 +168,6 @@ function Home() {
       setNativeStore('isListening', false)
     }
   }
-
-
 
   return (
     <div class="space-y-6 mx-auto">
