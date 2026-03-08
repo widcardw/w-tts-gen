@@ -1,7 +1,7 @@
 import { createMemo, createSignal, onMount, Show } from 'solid-js'
-import { configStore, setConfigStore, AppConfig } from '../stores/app'
+import { configStore, setConfigStore } from '../stores/app'
 import { edgeStore as es, setEdgeStore } from '../stores/edge'
-import { EdgeTtsService, OsService, ConfigService } from '#/bridgetts/services'
+import { EdgeTtsService, OsService } from '#/bridgetts/services'
 import { Voice } from '#/github.com/wujunwei928/edge-tts-go/edge_tts'
 import { Dialogs } from '@wailsio/runtime'
 import { Accessor } from 'solid-js'
@@ -17,6 +17,7 @@ import { Selector } from '~/components/ui/Selector'
 import { toaster } from '~/utils/toaster'
 import { saveConfig } from '~/utils/config'
 import clsx from 'clsx'
+import { chooseAndRead } from '~/utils/choose-txt'
 
 function EdgeTts() {
   const [isLoading, setIsLoading] = createSignal(false)
@@ -30,10 +31,6 @@ function EdgeTts() {
       const voiceList: Voice[] = await EdgeTtsService.ListVoices(true)
       setEdgeStore('voiceInfo', voiceList)
       setEdgeStore('locales', Array.from(new Set(voiceList.map((i) => i.Locale))).sort())
-
-      // 重新读取配置以获取更新后的缓存数据
-      const conf: AppConfig = await ConfigService.ReadConfig()
-      setConfigStore('edgeCachedVoiceInfo', conf.edgeCachedVoiceInfo)
 
       toaster.update(loadingToast, {
         title: 'Edge Voices Loaded Successfully',
@@ -62,6 +59,13 @@ function EdgeTts() {
     }
     if (configStore.edgeSelectedVoice) {
       setEdgeStore('selVoiceName', configStore.edgeSelectedVoice)
+    }
+
+    // 从后端加载 voices（使用缓存）
+    if (es.voiceInfo.length === 0) {
+      const voiceList: Voice[] = await EdgeTtsService.ListVoices(false)
+      setEdgeStore('voiceInfo', voiceList)
+      setEdgeStore('locales', Array.from(new Set(voiceList.map((i) => i.Locale))).sort())
     }
   })
 
@@ -185,7 +189,16 @@ function EdgeTts() {
   return (
     <div class="space-y-6 mx-auto">
       <Field.Root>
-        <Field.Label>TTS Content</Field.Label>
+        <Field.Label class="flex items-center gap-2">
+          TTS Content
+          <div
+            class="i-ri-folder-5-line hover:text-primary cursor-pointer"
+            onClick={async () => {
+              const res = await chooseAndRead()
+              if (res) setEdgeStore('content', res)
+            }}
+          />
+        </Field.Label>
         <Field.Textarea
           class="text-1rem py-1"
           autocomplete="false"

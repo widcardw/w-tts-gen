@@ -81,12 +81,9 @@ const Layout: Component<{ children: any }> = (props) => {
       </Collapsible.Root>
 
       <main
-        class={clsx(
-          'flex-1 container min-w-600px max-w-1200px mx-auto px-6 py-6',
-          goos() === 'darwin' && 'mt-20px',
-        )}
+        class={clsx('flex-1 container min-w-600px max-w-1200px mx-auto h-screen overflow-y-auto')}
       >
-        {props.children}
+        <div class={clsx('px-6 py-6', goos() === 'darwin' && 'pt-36px')}>{props.children}</div>
       </main>
     </div>
   )

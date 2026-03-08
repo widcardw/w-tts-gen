@@ -4,7 +4,7 @@ import { Router } from '@solidjs/router'
 import routes from '~solid-pages'
 import Layout from './components/Layout'
 import { onCleanup, onMount, Show } from 'solid-js'
-import { ConfigService, EdgeTtsService } from '#/bridgetts/services'
+import { ConfigService } from '#/bridgetts/services'
 import { AppConfig, setConfigStore, setNativeStore } from './stores/app'
 import { setEdgeStore } from './stores/edge'
 import { watchThemeIfAuto, changeTheme } from './utils/theme'
@@ -26,26 +26,12 @@ render(
       setConfigStore('edgeAutoSlice', conf.edgeAutoSlice)
       setConfigStore('defaultSaveDir', conf.defaultSaveDir)
       setConfigStore('theme', conf.theme)
-      setConfigStore('edgeCachedVoiceInfo', conf.edgeCachedVoiceInfo)
       setConfigStore('edgeSelectedLocale', conf.edgeSelectedLocale)
       setConfigStore('edgeSelectedVoice', conf.edgeSelectedVoice)
       setNativeStore('outputPath', conf.defaultSaveDir)
       setEdgeStore('outputPath', conf.defaultSaveDir)
       changeTheme(conf.theme as 'auto' | 'light' | 'dark')
       watchThemeIfAuto()
-
-      if (!conf.edgeCachedVoiceInfo || conf.edgeCachedVoiceInfo.length === 0) {
-        await EdgeTtsService.ListVoices(true)
-      }
-
-      // 从缓存加载 Edge 语音列表
-      if (conf.edgeCachedVoiceInfo && conf.edgeCachedVoiceInfo.length > 0) {
-        setEdgeStore('voiceInfo', conf.edgeCachedVoiceInfo)
-        setEdgeStore(
-          'locales',
-          Array.from(new Set(conf.edgeCachedVoiceInfo.map((i) => i.Locale))).sort(),
-        )
-      }
     })
 
     const cleanupNativeProgressListener = Events.On('progress:native', (data) => {

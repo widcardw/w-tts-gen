@@ -16,6 +16,7 @@ import { Selector } from '~/components/ui/Selector'
 
 import { toaster } from '~/utils/toaster'
 import { saveConfig } from '~/utils/config'
+import { chooseAndRead } from '~/utils/choose-txt'
 
 function Home() {
   async function getVoices() {
@@ -172,7 +173,16 @@ function Home() {
   return (
     <div class="space-y-6 mx-auto">
       <Field.Root>
-        <Field.Label>TTS Content</Field.Label>
+        <Field.Label class="flex items-center gap-2">
+          TTS Content
+          <div
+            class="i-ri-folder-5-line hover:text-primary cursor-pointer"
+            onClick={async () => {
+              const res = await chooseAndRead()
+              if (res) setNativeStore('content', res)
+            }}
+          />
+        </Field.Label>
         <Field.Textarea
           class="text-1rem py-1"
           autocomplete="false"

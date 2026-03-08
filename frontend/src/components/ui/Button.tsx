@@ -5,7 +5,7 @@ const VariantClasses = {
   default: 'bg-primary text-primary-foreground hover:bg-primary/90',
   destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
   secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-  ghost: 'bg-transparent hover:bg-primary text-text hover:bg-opacity-10 hover:text-primary-foreground',
+  ghost: 'bg-transparent hover:bg-primary text-text hover:text-primary-foreground',
 }
 
 const SizeClasses = {
@@ -18,6 +18,7 @@ const SizeClasses = {
 const Button: Component<{
   disabled?: boolean
   variant?: 'default' | 'secondary' | 'destructive' | 'ghost'
+  class?: string
   size?: 'default' | 'sm' | 'lg' | 'icon'
   onClick?: (args: unknown) => unknown
   children?: JSXElement
@@ -29,6 +30,7 @@ const Button: Component<{
       children: '',
       disabled: false,
       size: 'default',
+      class: '',
     },
     props,
   )
@@ -38,7 +40,13 @@ const Button: Component<{
   return (
     <button
       disabled={p.disabled}
-      class={clsx(commonClass, VariantClasses[p.variant], SizeClasses[p.size], 'font-sans')}
+      class={clsx(
+        commonClass,
+        VariantClasses[p.variant],
+        SizeClasses[p.size],
+        'font-sans',
+        p.class,
+      )}
       onClick={p.onClick}
     >
       {p.children}

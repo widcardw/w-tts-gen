@@ -30,7 +30,7 @@ func init() {
 // and starts a goroutine that emits a time-based event every second. It subsequently runs the application and
 // logs any error that might occur.
 func main() {
-	
+
 	if configPath, err := os.UserConfigDir(); err == nil {
 		services.Env.BasePath = configPath
 	}
@@ -65,7 +65,7 @@ func main() {
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title: "W-TTS",
 		Mac: application.MacWindow{
-			InvisibleTitleBarHeight: 50,
+			InvisibleTitleBarHeight: 40,
 			Backdrop:                application.MacBackdropTranslucent,
 			TitleBar:                application.MacTitleBarHiddenInset,
 		},

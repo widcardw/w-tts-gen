@@ -19,7 +19,7 @@ func (o *OsService) OpenFile(path string) error {
 	if _, err := os.Stat(path); err != nil && os.IsNotExist(err) {
 		return fmt.Errorf("path does not exist: %w", err)
 	}
-	
+
 	var cmd *exec.Cmd
 
 	switch o.GetOs() {
@@ -43,7 +43,7 @@ func (o *OsService) OpenFolder(path string) error {
 	if _, err := os.Stat(path); err != nil && os.IsNotExist(err) {
 		return fmt.Errorf("path does not exist: %w", err)
 	}
-	
+
 	app := application.Get()
 	return app.Env.OpenFileManager(path, true)
 }
@@ -61,4 +61,15 @@ func (o *OsService) PathStat(path string) string {
 	} else {
 		return err.Error()
 	}
+}
+
+func (o *OsService) ReadTxtFile(path string) string {
+	if path == "" {
+		return ""
+	}
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return err.Error()
+	}
+	return string(b)
 }

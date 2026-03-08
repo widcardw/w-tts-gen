@@ -15,26 +15,40 @@ import (
 
 type EdgeTtsService struct{}
 
+var edgeVoicesCache []edge_tts.Voice
+
+func init() {
+	// 启动时加载缓存的 voices
+	confPath := GetPath("W-TTS/edge-voices.yml")
+	b, err := os.ReadFile(confPath)
+	if err == nil {
+		var voicesConfig EdgeVoicesConfig
+		if err := yaml.Unmarshal(b, &voicesConfig); err == nil {
+			edgeVoicesCache = voicesConfig.Voices
+		}
+	}
+}
+
 func (e *EdgeTtsService) ListVoices(force bool) ([]edge_tts.Voice, error) {
-	if force || len(Config.EdgeCachedVoiceInfo) == 0 {
+	if force || len(edgeVoicesCache) == 0 {
 		voices, err := edge_tts.ListVoices("")
 		if err != nil {
 			return nil, err
 		}
-		Config.EdgeCachedVoiceInfo = voices
-		// 保存配置到文件
-		if err := saveEdgeVoicesConfig(); err != nil {
-			fmt.Printf("Failed to save config: %v\n", err)
+		edgeVoicesCache = voices
+		// 保存到独立文件
+		if err := saveEdgeVoicesCache(); err != nil {
+			fmt.Printf("Failed to save edge voices cache: %v\n", err)
 		}
 	}
-	return Config.EdgeCachedVoiceInfo, nil
+	return edgeVoicesCache, nil
 }
 
-// saveEdgeVoicesConfig 保存配置到文件
-func saveEdgeVoicesConfig() error {
-	yBytes, err := yaml.Marshal(&Config)
+// saveEdgeVoicesCache 保存 voices 到独立文件
+func saveEdgeVoicesCache() error {
+	yBytes, err := yaml.Marshal(&EdgeVoicesConfig{Voices: edgeVoicesCache})
 	if err != nil {
-		return fmt.Errorf("failed to encode config into yaml: %w", err)
+		return fmt.Errorf("failed to encode voices into yaml: %w", err)
 	}
 
 	confDir := GetPath("W-TTS")
@@ -44,9 +58,9 @@ func saveEdgeVoicesConfig() error {
 		}
 	}
 
-	confPath := GetPath("W-TTS/config.yml")
+	confPath := GetPath("W-TTS/edge-voices.yml")
 	if err := os.WriteFile(confPath, yBytes, os.ModePerm); err != nil {
-		return fmt.Errorf("failed to write config to file: %w", err)
+		return fmt.Errorf("failed to write edge-voices to file: %w", err)
 	}
 	return nil
 }

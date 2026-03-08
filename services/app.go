@@ -28,12 +28,15 @@ var Env = &EnvResult{
 }
 
 type AppConfig struct {
-	DefaultSaveDir       string           `json:"defaultSaveDir"`
-	Theme                string           `json:"theme"`
-	NativeAutoSlice      bool             `json:"nativeAutoSlice"`
-	NativeCompress       bool             `json:"nativeCompress"`
-	EdgeAutoSlice        bool             `json:"edgeAutoSlice"`
-	EdgeCachedVoiceInfo  []edge_tts.Voice `json:"edgeCachedVoiceInfo"`
-	EdgeSelectedLocale   string           `json:"edgeSelectedLocale"`
-	EdgeSelectedVoice   string           `json:"edgeSelectedVoice"`
+	DefaultSaveDir     string `json:"defaultSaveDir"`
+	Theme              string `json:"theme"`
+	NativeAutoSlice    bool   `json:"nativeAutoSlice"`
+	NativeCompress     bool   `json:"nativeCompress"`
+	EdgeAutoSlice      bool   `json:"edgeAutoSlice"`
+	EdgeSelectedLocale string `json:"edgeSelectedLocale"`
+	EdgeSelectedVoice  string `json:"edgeSelectedVoice"`
+}
+
+type EdgeVoicesConfig struct {
+	Voices []edge_tts.Voice `json:"voices"`
 }
