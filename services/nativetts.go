@@ -77,20 +77,21 @@ func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, 
 				return "", fmt.Errorf("failed to create output folder: %w", err)
 			}
 
-			// 逐个生成音频
-			for i, segment := range segments {
-				filename := GetSegmentFileName(i+1, segment)
-				segmentPath := filepath.Join(folderPath, filename)
+	// 逐个生成音频
+	for i, segment := range segments {
+		filename := GetSegmentFileName(i+1, segment)
+		segmentPath := filepath.Join(folderPath, filename)
 
-				_, err := n.generateSingleSpeech(goos, v, segment, segmentPath)
-				if err != nil {
-					return folderPath, fmt.Errorf("failed to generate segment %d: %w", i+1, err)
-				}
-				app.Event.Emit("progress:native", ProgressEvent{
-					finished: i+1,
-					total: len(segments),
-				})
-			}
+		_, err := n.generateSingleSpeech(goos, v, segment, segmentPath)
+		if err != nil {
+			// 即使有错误也返回 folderPath，因为可能只是转换失败但文件已生成
+			return folderPath, err
+		}
+		app.Event.Emit("progress:native", ProgressEvent{
+			finished: i+1,
+			total: len(segments),
+		})
+	}
 
 			return folderPath, nil
 		}

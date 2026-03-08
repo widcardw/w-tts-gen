@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"gopkg.in/yaml.v3"
@@ -77,4 +79,24 @@ func (c *ConfigService) OpenDevTools() error {
 		return nil
 	}
 	return fmt.Errorf("Cannot find current Window!")
+}
+
+// CheckFFmpegAvailable 检查 FFmpeg 是否可用
+// macOS: afconvert 是系统自带的，不需要 FFmpeg
+// Windows: 需要 FFmpeg 来转换音频格式
+// Linux: 需要 FFmpeg 来转换音频格式
+func CheckFFmpegAvailable() bool {
+	// macOS 不需要 FFmpeg，使用系统的 afconvert
+	if runtime.GOOS == "darwin" {
+		return true
+	}
+
+	// Windows 和 Linux 需要 FFmpeg
+	_, err := exec.LookPath("ffmpeg")
+	return err == nil
+}
+
+// CheckFFmpegAvailable 检查 FFmpeg 是否可用
+func (c *ConfigService) CheckFFmpegAvailable() bool {
+	return CheckFFmpegAvailable()
 }

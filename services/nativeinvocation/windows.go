@@ -99,24 +99,13 @@ $s.SetOutputToDefaultAudioDevice()`, escapeForPowerShell(v.Name), escapeForPower
 func convertWavToM4a(wavPath string) (string, error) {
 	m4aPath := strings.TrimSuffix(wavPath, filepath.Ext(wavPath)) + ".m4a"
 
-	// 检查 FFmpeg 是否可用
-	_, err := exec.LookPath("ffmpeg")
-	if err != nil {
-		errMsg := "FFmpeg 未找到，无法转换为 M4A 格式。已生成 WAV 文件。\n" +
-			"请安装 FFmpeg 后再尝试压缩功能：\n" +
-			"1. 访问 https://getffmpeg.org/ 下载 FFmpeg\n" +
-			"2. 解压后将 bin 目录添加到系统 PATH 环境变量中\n" +
-			"3. 重启应用后即可使用压缩功能"
-		log.Printf("FFmpeg not found: %s", errMsg)
-		return wavPath, fmt.Errorf("%s", errMsg)
-	}
-
 	// 使用 FFmpeg 转换为 AAC
 	cmd := exec.Command("ffmpeg", "-y", "-i", wavPath, "-c:a", "aac", "-b:a", "192k", m4aPath)
 	cmd.SysProcAttr = CreateSysAttr()
 	if err := cmd.Run(); err != nil {
 		log.Printf("Failed to convert WAV to M4A: %v", err)
-		return wavPath, fmt.Errorf("音频转换失败，已生成 WAV 文件")
+		// 转换失败，保留原始 WAV 文件
+		return wavPath, err
 	}
 
 	// 转换成功，删除原始 WAV 文件
