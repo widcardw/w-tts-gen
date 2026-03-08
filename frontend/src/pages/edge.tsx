@@ -157,8 +157,12 @@ function EdgeTts() {
           placeholder="Please input the text to synthesize..."
         />
       </Field.Root>
-      
-      <Switch.Root class={switchStyles.Root} checked={es.autoSlice} onCheckedChange={(e) => setEdgeStore('autoSlice', e.checked)}>
+
+      <Switch.Root
+        class={switchStyles.Root}
+        checked={es.autoSlice}
+        onCheckedChange={(e) => setEdgeStore('autoSlice', e.checked)}
+      >
         <Switch.Control class={switchStyles.Control}>
           <Switch.Thumb class={switchStyles.Thumb} />
         </Switch.Control>
@@ -330,7 +334,10 @@ function EdgeTts() {
           onClick={generateTtsEdge}
           disabled={es.content.trim() === '' || es.outputPath === '' || es.isLoading}
         >
-          <Show when={es.progress.total !== 0 && es.progress.total !== es.progress.finished} fallback="Generate">
+          <Show
+            when={es.progress.total !== 0 && es.progress.total !== es.progress.finished}
+            fallback="Generate"
+          >
             Generating ({es.progress.finished}/{es.progress.total})
           </Show>
         </Button>

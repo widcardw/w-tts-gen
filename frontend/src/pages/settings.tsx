@@ -24,16 +24,6 @@ import { toaster } from '~/utils/toaster'
 function Settings() {
   const [isLoading, setLoading] = createSignal(false)
 
-  Dialogs.Question({
-    Title: 'Are you sure?',
-    Buttons: [{Label: 'Delete', IsDefault: false, IsCancel: false}, {'Label': 'No', IsDefault: true, IsCancel: true}],
-    Message: 'Are you sure you want to delete it?',
-  }).then((resLabel) => {
-    if (resLabel === 'Delete') {
-      console.log('Delete')
-    }
-  })
-
   async function tryToSaveConfig() {
     setLoading(true)
     try {
@@ -117,11 +107,12 @@ function Settings() {
         // FFmpeg 不可用，显示确认对话框
         const shouldOpen = await Dialogs.Question({
           Title: 'Cannot find FFmpeg',
-          Message: 'If you want to enable compression, you need to install FFmpeg.\n\nDo you want to open the FFmpeg download page?',
+          Message:
+            'If you want to enable compression, you need to install FFmpeg.\n\nDo you want to open the FFmpeg download page?',
           Buttons: [
             { Label: 'Yes', IsDefault: true, IsCancel: false },
             { Label: 'No', IsDefault: false, IsCancel: true },
-          ]
+          ],
         })
 
         if (shouldOpen) {

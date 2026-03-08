@@ -81,7 +81,12 @@ function Home() {
     }
     try {
       setNativeStore('isLoading', true)
-      const audioPath = await NativeTts.GenerateSpeech(selectedVoice(), ns.content, ns.outputPath, ns.autoSlice)
+      const audioPath = await NativeTts.GenerateSpeech(
+        selectedVoice(),
+        ns.content,
+        ns.outputPath,
+        ns.autoSlice,
+      )
       setNativeStore('finalAudioPath', audioPath)
       toaster.create({
         description: (
@@ -168,8 +173,12 @@ function Home() {
           placeholder="Please input the text to synthesize..."
         />
       </Field.Root>
-      
-      <Switch.Root class={switchStyles.Root} checked={ns.autoSlice} onCheckedChange={(e) => setNativeStore('autoSlice', e.checked)}>
+
+      <Switch.Root
+        class={switchStyles.Root}
+        checked={ns.autoSlice}
+        onCheckedChange={(e) => setNativeStore('autoSlice', e.checked)}
+      >
         <Switch.Control class={switchStyles.Control}>
           <Switch.Thumb class={switchStyles.Thumb} />
         </Switch.Control>
@@ -242,7 +251,10 @@ function Home() {
               <Button
                 variant="ghost"
                 disabled={
-                  selectedVoice() === undefined || ns.selLang === '' || ns.selSpeaker === '' || ns.isListening
+                  selectedVoice() === undefined ||
+                  ns.selLang === '' ||
+                  ns.selSpeaker === '' ||
+                  ns.isListening
                 }
                 onClick={tryListening}
               >
@@ -258,7 +270,10 @@ function Home() {
           onClick={generateTtsNative}
           disabled={ns.content.trim() === '' || ns.outputPath === '' || ns.isLoading}
         >
-          <Show when={ns.progress.total !== 0 && ns.progress.total !== ns.progress.finished} fallback="Generate">
+          <Show
+            when={ns.progress.total !== 0 && ns.progress.total !== ns.progress.finished}
+            fallback="Generate"
+          >
             Generating ({ns.progress.finished}/{ns.progress.total})
           </Show>
         </Button>

@@ -15,7 +15,7 @@ import toastStyles from './components/styles/toast.module.css'
 import { Toast, Toaster } from '@ark-ui/solid'
 import { toaster } from './utils/toaster'
 
-import {Events} from '@wailsio/runtime'
+import { Events } from '@wailsio/runtime'
 
 render(
   () => {
@@ -29,19 +29,19 @@ render(
       changeTheme(conf.theme as 'auto' | 'light' | 'dark')
       watchThemeIfAuto()
     })
-    
+
     const cleanupNativeProgressListener = Events.On('progress:native', (data) => {
       console.log('event', data)
       setNativeStore('progress', 'finished', data.data.finished)
       setNativeStore('progress', 'total', data.data.total)
     })
-    
+
     const cleanupEdgeProgressListener = Events.On('progress:edge', (data) => {
       console.log('event', data)
       setEdgeStore('progress', 'finished', data.data.finished)
       setEdgeStore('progress', 'total', data.data.total)
     })
-    
+
     onCleanup(() => {
       cleanupNativeProgressListener()
       cleanupEdgeProgressListener()
@@ -59,7 +59,9 @@ render(
                     <Toast.Title class={toastStyles.Title}>{toast().title}</Toast.Title>
                   </Show>
                   <Show when={toast().description}>
-                    <Toast.Description class={toastStyles.Description}>{toast().description}</Toast.Description>
+                    <Toast.Description class={toastStyles.Description}>
+                      {toast().description}
+                    </Toast.Description>
                   </Show>
                   <Toast.CloseTrigger class={toastStyles.CloseTrigger}>
                     <div class="i-ri-close-line" />
