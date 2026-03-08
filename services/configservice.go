@@ -53,6 +53,8 @@ func (c *ConfigService) WriteConfig(conf *AppConfig) (string, error) {
 	Config.NativeCompress = conf.NativeCompress
 	Config.NativeAutoSlice = conf.NativeAutoSlice
 	Config.EdgeAutoSlice = conf.EdgeAutoSlice
+	Config.EdgeSelectedLocale = conf.EdgeSelectedLocale
+	Config.EdgeSelectedVoice = conf.EdgeSelectedVoice
 
 	Config.DefaultSaveDir = conf.DefaultSaveDir
 	Config.Theme = conf.Theme

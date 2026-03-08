@@ -51,6 +51,8 @@ class AppConfig {
   nativeCompress = true
   edgeAutoSlice = false
   edgeCachedVoiceInfo: any[] = []
+  edgeSelectedLocale = ''
+  edgeSelectedVoice = ''
   constructor(source = {}) {
     Object.assign(this, source)
   }
@@ -66,6 +68,8 @@ const [configStore, setConfigStore] = createStore<AppConfig>({
   nativeCompress: true,
   edgeAutoSlice: false,
   edgeCachedVoiceInfo: [],
+  edgeSelectedLocale: '',
+  edgeSelectedVoice: '',
 })
 
 export { nativeStore, setNativeStore, configStore, setConfigStore }

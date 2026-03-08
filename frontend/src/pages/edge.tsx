@@ -55,8 +55,29 @@ function EdgeTts() {
   onMount(async () => {
     // 从已加载的 configStore 中读取 edgeAutoSlice 设置
     setEdgeStore('autoSlice', configStore.edgeAutoSlice)
-    console.log(configStore.edgeAutoSlice)
+
+    // 从配置中恢复选中的 locale 和 voice
+    if (configStore.edgeSelectedLocale) {
+      setEdgeStore('selLocale', configStore.edgeSelectedLocale)
+    }
+    if (configStore.edgeSelectedVoice) {
+      setEdgeStore('selVoiceName', configStore.edgeSelectedVoice)
+    }
   })
+
+  // 当选中 locale 或 voice 时，保存到配置
+  function handleLocaleChange(locale: string) {
+    setEdgeStore('selLocale', locale)
+    setConfigStore('edgeSelectedLocale', locale)
+    console.log('selected locale', configStore.edgeSelectedLocale)
+    saveConfig(false)
+  }
+
+  function handleVoiceChange(voiceName: string) {
+    setEdgeStore('selVoiceName', voiceName)
+    setConfigStore('edgeSelectedVoice', voiceName)
+    saveConfig(false)
+  }
 
   const selectedVoice: Accessor<Voice> = createMemo(() => {
     return es.voiceInfo.find((i) => i.Locale === es.selLocale && i.ShortName === es.selVoiceName)
@@ -181,7 +202,7 @@ function EdgeTts() {
           onCheckedChange={(e) => {
             setEdgeStore('autoSlice', e.checked)
             setConfigStore('edgeAutoSlice', e.checked)
-            saveConfig()
+            saveConfig(false)
           }}
         >
           <Switch.Control class={switchStyles.Control}>
@@ -221,7 +242,7 @@ function EdgeTts() {
           placeholder="Select Locale"
           value={es.selLocale}
           data={es.locales.map((i) => ({ label: i, value: i }))}
-          onValueChanged={(v) => setEdgeStore('selLocale', v.value[0])}
+          onValueChanged={(v) => handleLocaleChange(v.value[0])}
         />
         <Selector
           label="Speaker"
@@ -231,7 +252,7 @@ function EdgeTts() {
           data={es.voiceInfo
             .filter((i) => i.Locale === es.selLocale)
             .map((i) => ({ label: i.FriendlyName, value: i.ShortName }))}
-          onValueChanged={(v) => setEdgeStore('selVoiceName', v.value[0])}
+          onValueChanged={(v) => handleVoiceChange(v.value[0])}
         />
       </div>
 

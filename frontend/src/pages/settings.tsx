@@ -18,7 +18,7 @@ function Settings() {
   function handleThemeChange(t: 'auto' | 'light' | 'dark') {
     setConfigStore('theme', t)
     changeTheme(t)
-    saveConfig()
+    saveConfig(false)
   }
   // async function openDevTools() {
   //   await ConfigService.OpenDevTools()
@@ -35,7 +35,7 @@ function Settings() {
       if (selectedPath.trim() !== '') {
         setConfigStore('defaultSaveDir', selectedPath)
         updateOutputPath(selectedPath)
-        saveConfig()
+        saveConfig(false)
       }
     } catch (e) {
       console.error('Failed to select path:', e)
@@ -73,7 +73,7 @@ function Settings() {
             onInput={(v) => {
               setConfigStore('defaultSaveDir', v.target.value)
               updateOutputPath(v.target.value)
-              saveConfig()
+              saveConfig(false)
             }}
           />
           <Button onClick={chooseDefaultPath}>Choose</Button>

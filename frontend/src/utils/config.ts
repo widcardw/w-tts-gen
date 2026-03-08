@@ -6,7 +6,7 @@ import { toaster } from './toaster'
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-export function saveConfig() {
+export function saveConfig(verbose = true) {
   if (debounceTimer) {
     clearTimeout(debounceTimer)
   }
@@ -19,13 +19,17 @@ export function saveConfig() {
           nativeAutoSlice: configStore.nativeAutoSlice,
           nativeCompress: configStore.nativeCompress,
           edgeAutoSlice: configStore.edgeAutoSlice,
+          edgeSelectedLocale: configStore.edgeSelectedLocale,
+          edgeSelectedVoice: configStore.edgeSelectedVoice,
         }),
       )
-      toaster.create({
-        title: 'Success',
-        description: 'Config saved successfully',
-        type: 'success',
-      })
+      if (verbose) {
+        toaster.create({
+          title: 'Success',
+          description: 'Config saved successfully',
+          type: 'success',
+        })
+      }
     } catch (e) {
       toaster.create({
         title: 'Error',

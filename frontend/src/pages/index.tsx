@@ -189,7 +189,7 @@ function Home() {
           onCheckedChange={(e) => {
             setNativeStore('autoSlice', e.checked)
             setConfigStore('nativeAutoSlice', e.checked)
-            saveConfig()
+            saveConfig(false)
           }}
         >
           <Switch.Control class={switchStyles.Control}>
@@ -228,7 +228,7 @@ function Home() {
             }
             setNativeStore('compress', e.checked)
             setConfigStore('nativeCompress', e.checked)
-            saveConfig()
+            saveConfig(false)
           }}
         >
           <Switch.Control class={switchStyles.Control}>

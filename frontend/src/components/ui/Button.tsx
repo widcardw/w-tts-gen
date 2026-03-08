@@ -5,7 +5,7 @@ const VariantClasses = {
   default: 'bg-primary text-primary-foreground hover:bg-primary/90',
   destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
   secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-  ghost: 'bg-transparent hover:bg-primary hover:bg-opacity-10 hover:text-primary-foreground',
+  ghost: 'bg-transparent hover:bg-primary text-text hover:bg-opacity-10 hover:text-primary-foreground',
 }
 
 const SizeClasses = {

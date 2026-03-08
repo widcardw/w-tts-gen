@@ -27,6 +27,8 @@ render(
       setConfigStore('defaultSaveDir', conf.defaultSaveDir)
       setConfigStore('theme', conf.theme)
       setConfigStore('edgeCachedVoiceInfo', conf.edgeCachedVoiceInfo)
+      setConfigStore('edgeSelectedLocale', conf.edgeSelectedLocale)
+      setConfigStore('edgeSelectedVoice', conf.edgeSelectedVoice)
       setNativeStore('outputPath', conf.defaultSaveDir)
       setEdgeStore('outputPath', conf.defaultSaveDir)
       changeTheme(conf.theme as 'auto' | 'light' | 'dark')
