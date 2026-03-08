@@ -4,6 +4,7 @@
   align-items: center;
   gap: 0.5rem;
   position: relative;
+  cursor: pointer;
 
   &[data-disabled] {
     opacity: 0.5;

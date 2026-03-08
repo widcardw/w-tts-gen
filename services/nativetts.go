@@ -122,9 +122,9 @@ func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, 
 func (n *NativeTts) generateSingleSpeech(goos string, v ni.VoiceInfo, s string, outputPath string) (string, error) {
 	switch goos {
 	case "darwin":
-		return ni.DarwinGenerateTts(v, outputPath, s)
+		return ni.DarwinGenerateTts(v, outputPath, s, Config.Compress)
 	case "windows":
-		return ni.WindowsGenerateTts(v, outputPath, s)
+		return ni.WindowsGenerateTts(v, outputPath, s, Config.Compress)
 	default:
 		cmd := exec.Command("espeak", s, "-w", outputPath)
 		if err := cmd.Run(); err != nil {

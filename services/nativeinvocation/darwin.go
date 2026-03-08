@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -36,7 +37,7 @@ func GetDarwinVoiceList() ([]VoiceInfo, error) {
 	return voices, nil
 }
 
-func DarwinGenerateTts(v VoiceInfo, outputPath string, s string) (string, error) {
+func DarwinGenerateTts(v VoiceInfo, outputPath string, s string, compress bool) (string, error) {
 	var tmp = outputPath
 	if !strings.HasSuffix(outputPath, ".aiff") {
 		tmp = outputPath + ".aiff"
@@ -50,6 +51,21 @@ func DarwinGenerateTts(v VoiceInfo, outputPath string, s string) (string, error)
 	if err := cmd.Run(); err != nil {
 		log.Fatal("Failed to generate tts!")
 		return "", err
+	}
+
+	// 如果需要压缩为 AAC 格式
+	if compress {
+		// 将 AIFF 转换为 AAC
+		aacPath := strings.TrimSuffix(tmp, ".aiff") + ".m4a"
+		convertCmd := exec.Command("afconvert", tmp, "-f", "m4af", "-d", "aac", "-q", "127", aacPath)
+		if err := convertCmd.Run(); err != nil {
+			// 转换失败，返回原始 AIFF 文件
+			log.Printf("Failed to convert to AAC: %v", err)
+			return tmp, nil
+		}
+		// 转换成功，删除原始 AIFF 文件
+		os.Remove(tmp)
+		return aacPath, nil
 	}
 
 	return tmp, nil
