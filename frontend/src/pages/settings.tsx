@@ -8,9 +8,11 @@ import { Field, RadioGroup } from '@ark-ui/solid'
 
 import '~/components/styles/input-field.css'
 import '~/components/styles/radio-group.css'
+import { useToaster } from '~/contexts/toaster'
 import { saveConfig, updateOutputPath } from '~/utils/config'
 
 function Settings() {
+  const toaster = useToaster()
   // const [isLoading, setLoading] = createSignal(false)
 
   const themeChoices = ['auto', 'light', 'dark']
@@ -18,7 +20,7 @@ function Settings() {
   function handleThemeChange(t: 'auto' | 'light' | 'dark') {
     setConfigStore('theme', t)
     changeTheme(t)
-    saveConfig(false)
+    saveConfig(false, toaster)
   }
   // async function openDevTools() {
   //   await ConfigService.OpenDevTools()
@@ -35,7 +37,7 @@ function Settings() {
       if (selectedPath.trim() !== '') {
         setConfigStore('defaultSaveDir', selectedPath)
         updateOutputPath(selectedPath)
-        saveConfig(false)
+        saveConfig(false, toaster)
       }
     } catch (e) {
       console.error('Failed to select path:', e)
@@ -73,7 +75,7 @@ function Settings() {
             onInput={(v) => {
               setConfigStore('defaultSaveDir', v.target.value)
               updateOutputPath(v.target.value)
-              saveConfig(false)
+              saveConfig(false, toaster)
             }}
           />
           <Button onClick={chooseDefaultPath}>Choose</Button>

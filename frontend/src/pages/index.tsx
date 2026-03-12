@@ -14,11 +14,13 @@ import switchStyles from '~/components/styles/switcher.module.css'
 
 import { Selector } from '~/components/ui/Selector'
 
-import { toaster } from '~/utils/toaster'
+import { useToaster } from '~/contexts/toaster'
 import { saveConfig } from '~/utils/config'
 import { chooseAndRead } from '~/utils/choose-txt'
 
 function Home() {
+  const toaster = useToaster()
+
   async function getVoices() {
     const loadingToast = toaster.create({
       title: 'Loading Voices...',
@@ -193,13 +195,13 @@ function Home() {
       </Field.Root>
 
       <div class="flex gap-6">
-        <Switch.Root
+          <Switch.Root
           class={switchStyles.Root}
           checked={ns.autoSlice}
           onCheckedChange={(e) => {
             setNativeStore('autoSlice', e.checked)
             setConfigStore('nativeAutoSlice', e.checked)
-            saveConfig(false)
+            saveConfig(false, toaster)
           }}
         >
           <Switch.Control class={switchStyles.Control}>
@@ -238,7 +240,7 @@ function Home() {
             }
             setNativeStore('compress', e.checked)
             setConfigStore('nativeCompress', e.checked)
-            saveConfig(false)
+            saveConfig(false, toaster)
           }}
         >
           <Switch.Control class={switchStyles.Control}>

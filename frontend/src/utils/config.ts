@@ -2,11 +2,11 @@ import { ConfigService } from '#/bridgetts/services'
 import { AppConfig, configStore } from '~/stores/app'
 import { setNativeStore } from '~/stores/app'
 import { setEdgeStore } from '~/stores/edge'
-import { toaster } from './toaster'
+import type { CreateToasterReturn } from '@ark-ui/solid/toast'
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-export function saveConfig(verbose = true) {
+export function saveConfig(verbose = true, toaster?: CreateToasterReturn) {
   if (debounceTimer) {
     clearTimeout(debounceTimer)
   }
@@ -23,7 +23,7 @@ export function saveConfig(verbose = true) {
           edgeSelectedVoice: configStore.edgeSelectedVoice,
         }),
       )
-      if (verbose) {
+      if (verbose && toaster) {
         toaster.create({
           title: 'Success',
           description: 'Config saved successfully',
@@ -31,11 +31,13 @@ export function saveConfig(verbose = true) {
         })
       }
     } catch (e) {
-      toaster.create({
-        title: 'Error',
-        description: `Failed to save config: ${String(e)}`,
-        type: 'error',
-      })
+      if (toaster) {
+        toaster.create({
+          title: 'Error',
+          description: `Failed to save config: ${String(e)}`,
+          type: 'error',
+        })
+      }
     }
     debounceTimer = null
   }, 1000)

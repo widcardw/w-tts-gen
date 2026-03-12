@@ -14,12 +14,13 @@ import '~/components/styles/tabs.css'
 import '~/components/styles/slider.css'
 import switchStyles from '~/components/styles/switcher.module.css'
 import { Selector } from '~/components/ui/Selector'
-import { toaster } from '~/utils/toaster'
+import { useToaster } from '~/contexts/toaster'
 import { saveConfig } from '~/utils/config'
 import clsx from 'clsx'
 import { chooseAndRead } from '~/utils/choose-txt'
 
 function EdgeTts() {
+  const toaster = useToaster()
   const [isLoading, setIsLoading] = createSignal(false)
   async function fetchVoices() {
     setIsLoading(true)
@@ -215,7 +216,7 @@ function EdgeTts() {
           onCheckedChange={(e) => {
             setEdgeStore('autoSlice', e.checked)
             setConfigStore('edgeAutoSlice', e.checked)
-            saveConfig(false)
+            saveConfig(false, toaster)
           }}
         >
           <Switch.Control class={switchStyles.Control}>
