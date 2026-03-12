@@ -1,4 +1,4 @@
-# W-TTS
+# W-TTS 快速开发指南
 
 ## Backend Service
 
@@ -6,7 +6,7 @@ Wails V3 https://v3alpha.wails.io/
 
 ### Call Go Function from Frontend
 
-For example, we have `services/greeteservice.go`
+For example, we have `services/greetservice.go`
 
 ```go
 package services
@@ -33,8 +33,8 @@ app := application.New(application.Options{
 In frontend pages, we do
 
 ```ts
-import { GreetService } from '#/wmail/services'
-async function getGreetMsg(name: str) {
+import { GreetService } from '#/wails/services'
+async function getGreetMsg(name: string) {
   return await GreetService.Greet(name)  // Hello ${name}!
 }
 ```
@@ -103,7 +103,7 @@ const resLabel = await Dialogs.Question({
   Title: 'Are you sure?',
   Buttons: [
     {Label: 'Delete', IsDefault: false, IsCancel: false}, 
-    {'Label': 'No', IsDefault: true, IsCancel: true}
+    {Label: 'No', IsDefault: true, IsCancel: true}
 	],
   Message: 'Are you sure you want to delete it?',
 })
@@ -119,4 +119,9 @@ if (resLabel === 'Delete') {
 wails3 dev
 ```
 
+## Build
 
+```sh
+wails3 build
+wails3 package
+```
