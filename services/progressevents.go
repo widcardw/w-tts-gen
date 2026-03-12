@@ -1,6 +1,6 @@
 package services
 
 type ProgressEvent struct {
-	finished int
-	total int
+	Finished int `json:"finished"`
+	Total    int `json:"total"`
 }

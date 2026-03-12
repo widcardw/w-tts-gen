@@ -4,6 +4,7 @@ import (
 	"bridgetts/services"
 	"embed"
 	_ "embed"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -74,6 +75,34 @@ func main() {
 		MinWidth:         800,
 		MinHeight:        600,
 	})
+
+	// 启动时检查是否有未完成的任务
+	configService := &services.ConfigService{}
+	unfinishedTask := configService.CheckUnfinishedTask()
+	if unfinishedTask != nil {
+		// 显示恢复任务对话框
+		dialog := app.Dialog.Question().
+			SetTitle("检测到未完成的任务").
+			SetMessage(fmt.Sprintf("发现上次未完成的语音合成任务（进度：%d/%d），是否恢复？",
+				unfinishedTask.Completed, unfinishedTask.TotalChunks))
+
+		recoverBtn := dialog.AddButton("恢复任务")
+		recoverBtn.OnClick(func() {
+			// 发送恢复任务事件到前端
+			app.Event.Emit("task:recover", unfinishedTask)
+		})
+
+		cancelBtn := dialog.AddButton("取消")
+		cancelBtn.OnClick(func() {
+			// 清除任务
+			configService.ClearRecoveryTask()
+		})
+
+		dialog.SetDefaultButton(recoverBtn)
+		dialog.SetCancelButton(cancelBtn)
+		// 等待对话框关闭后再显示窗口
+		dialog.Show()
+	}
 
 	// Create a goroutine that emits an event containing the current time every second.
 	// The frontend can listen to this event and update the UI accordingly.

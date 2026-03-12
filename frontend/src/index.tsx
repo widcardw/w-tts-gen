@@ -32,23 +32,32 @@ render(
       setEdgeStore('outputPath', conf.defaultSaveDir)
       changeTheme(conf.theme as 'auto' | 'light' | 'dark')
       watchThemeIfAuto()
-    })
 
-    const cleanupNativeProgressListener = Events.On('progress:native', (data) => {
-      console.log('event', data)
-      setNativeStore('progress', 'finished', data.data.finished)
-      setNativeStore('progress', 'total', data.data.total)
-    })
+      // 注册事件监听器
+      const cleanupNativeProgressListener = Events.On('progress:native', (data) => {
+        console.log('event', data)
+        setNativeStore('progress', 'finished', data.data.finished)
+        setNativeStore('progress', 'total', data.data.total)
+      })
 
-    const cleanupEdgeProgressListener = Events.On('progress:edge', (data) => {
-      console.log('event', data)
-      setEdgeStore('progress', 'finished', data.data.finished)
-      setEdgeStore('progress', 'total', data.data.total)
-    })
+      const cleanupEdgeProgressListener = Events.On('progress:edge', (data) => {
+        console.log('event', data)
+        setEdgeStore('progress', 'finished', data.data.finished)
+        setEdgeStore('progress', 'total', data.data.total)
+      })
 
-    onCleanup(() => {
-      cleanupNativeProgressListener()
-      cleanupEdgeProgressListener()
+      // 注册任务恢复事件
+      const cleanupTaskRecoverListener = Events.On('task:recover', (data) => {
+        console.log('recover task', data)
+        // TODO: 实现任务恢复逻辑
+      })
+
+      // 组件卸载时清理监听器
+      onCleanup(() => {
+        cleanupNativeProgressListener()
+        cleanupEdgeProgressListener()
+        cleanupTaskRecoverListener()
+      })
     })
 
     return (

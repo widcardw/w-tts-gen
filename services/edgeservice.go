@@ -66,16 +66,18 @@ func saveEdgeVoicesCache() error {
 }
 
 func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p string, outputPath string, content string, autoSlice bool) (string, error) {
+	configService := &ConfigService{}
+	var segments []string
+	var folderPath string
+
 	// 如果启用了自动分割
 	if autoSlice {
-		segments := SplitText(content)
-
+		segments = SplitText(content)
 		app := application.Get()
 
 		// 如果分割后有多个段落
 		if len(segments) > 1 {
 			// 确定输出文件夹路径
-			var folderPath string
 			if info, err := os.Stat(outputPath); err == nil && info.IsDir() {
 				// outputPath 是目录，在其下创建子文件夹
 				folderPath = filepath.Join(outputPath, GetFolderName(content))
@@ -90,18 +92,35 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 				return "", fmt.Errorf("failed to create output folder: %w", err)
 			}
 
+			// 创建恢复任务
+			configService.CreateRecoveryTask("edge", content, v.ShortName, v.Locale, folderPath, autoSlice, len(segments))
+			defer configService.ClearRecoveryTask() // 正常完成后清除任务
+
 			// 逐个生成音频
 			for i, segment := range segments {
 				filename := GetSegmentFileName(i+1, segment) + ".mp3"
 				segmentPath := filepath.Join(folderPath, filename)
 
+				// 跳过已生成的片段
+				if _, err := os.Stat(segmentPath); err == nil {
+					app.Event.Emit("progress:edge", ProgressEvent{
+						Finished: i + 1,
+						Total:    len(segments),
+					})
+					continue
+				}
+
 				err := e.generateSingleSpeech(v, r, vo, p, segmentPath, segment)
 				if err != nil {
+					// 失败时更新进度
+					configService.UpdateRecoveryProgress(i)
 					return folderPath, fmt.Errorf("failed to generate segment %d: %w", i+1, err)
 				}
+				// 更新进度
+				configService.UpdateRecoveryProgress(i + 1)
 				app.Event.Emit("progress:edge", ProgressEvent{
-					finished: i + 1,
-					total:    len(segments),
+					Finished: i + 1,
+					Total:    len(segments),
 				})
 			}
 

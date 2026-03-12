@@ -52,17 +52,19 @@ func (n *NativeTts) TryListening(v ni.VoiceInfo) error {
 
 func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, autoSlice bool, compress bool) (string, error) {
 	goos := runtime.GOOS
+	configService := &ConfigService{}
+	var segments []string
+	var folderPath string
 
 	app := application.Get()
 
 	// 如果启用了自动分割
 	if autoSlice {
-		segments := SplitText(s)
+		segments = SplitText(s)
 
 		// 如果分割后有多个段落
 		if len(segments) > 1 {
 			// 确定输出文件夹路径
-			var folderPath string
 			if info, err := os.Stat(outputPath); err == nil && info.IsDir() {
 				// outputPath 是目录，在其下创建子文件夹
 				folderPath = filepath.Join(outputPath, GetFolderName(s))
@@ -77,19 +79,36 @@ func (n *NativeTts) GenerateSpeech(v ni.VoiceInfo, s string, outputPath string, 
 				return "", fmt.Errorf("failed to create output folder: %w", err)
 			}
 
+			// 创建恢复任务
+			configService.CreateRecoveryTask("native", s, v.Name, v.Lang, folderPath, autoSlice, len(segments))
+			defer configService.ClearRecoveryTask() // 正常完成后清除任务
+
 			// 逐个生成音频
 			for i, segment := range segments {
 				filename := GetSegmentFileName(i+1, segment)
 				segmentPath := filepath.Join(folderPath, filename)
 
+				// 跳过已生成的片段
+				if _, err := os.Stat(segmentPath); err == nil {
+					app.Event.Emit("progress:native", ProgressEvent{
+						Finished: i + 1,
+						Total:    len(segments),
+					})
+					continue
+				}
+
 				_, err := n.generateSingleSpeech(goos, v, segment, segmentPath, compress)
 				if err != nil {
+					// 失败时更新进度
+					configService.UpdateRecoveryProgress(i)
 					// 即使有错误也返回 folderPath，因为可能只是转换失败但文件已生成
 					return folderPath, err
 				}
+				// 更新进度
+				configService.UpdateRecoveryProgress(i + 1)
 				app.Event.Emit("progress:native", ProgressEvent{
-					finished: i + 1,
-					total:    len(segments),
+					Finished: i + 1,
+					Total:    len(segments),
 				})
 			}
 
