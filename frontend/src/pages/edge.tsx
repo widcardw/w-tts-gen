@@ -1,4 +1,4 @@
-import { createMemo, createSignal, onMount, Show } from 'solid-js'
+import { createMemo, createSignal, onMount, Show, createEffect, on } from 'solid-js'
 import { configStore, setConfigStore } from '../stores/app'
 import { edgeStore as es, setEdgeStore } from '../stores/edge'
 import { EdgeTtsService, OsService } from '#/bridgetts/services'
@@ -22,6 +22,7 @@ import { chooseAndRead } from '~/utils/choose-txt'
 function EdgeTts() {
   const toaster = useToaster()
   const [isLoading, setIsLoading] = createSignal(false)
+  let generationToastId: string | undefined
   async function fetchVoices() {
     setIsLoading(true)
     const loadingToast = toaster.create({
@@ -88,6 +89,27 @@ function EdgeTts() {
     return es.voiceInfo.find((i) => i.Locale === es.selLocale && i.ShortName === es.selVoiceName)
   })
 
+  // Update progress toast when progress changes
+  createEffect(on(
+    () => [es.progress.finished, es.progress.total],
+    ([finished, total]) => {
+      if (generationToastId && total > 0 && finished <= total) {
+        toaster.update(generationToastId, {
+          title: 'Generating TTS...',
+          description: (<>
+            <div>Progress: {finished}/{total} segments completed</div>
+            <div class="w-full rounded-3px h-5px bg-border flex">
+              <div class="bg-primary rounded-3px h-5px" style={{
+                'width': `${finished/total * 100}%`
+              }} />
+            </div>
+          </>),
+          type: 'info',
+        })
+      }
+    }
+  ))
+
   async function ChooseOutputDialog() {
     try {
       const selectedPath = await Dialogs.OpenFile({
@@ -145,6 +167,15 @@ function EdgeTts() {
     }
     try {
       setEdgeStore('isLoading', true)
+      // Reset progress
+      setEdgeStore('progress', { finished: 0, total: 0 })
+      // Create generation progress toast
+      generationToastId = toaster.create({
+        title: 'Generating TTS...',
+        description: 'Preparing to generate audio files...',
+        type: 'info',
+        duration: Infinity,
+      })
       const audioPath = await EdgeTtsService.GenerateSpeech(
         selectedVoice(),
         (es.rate < 0 ? '' : '+') + es.rate + '%',
@@ -155,7 +186,9 @@ function EdgeTts() {
         es.autoSlice,
       )
       setEdgeStore('finalAudioPath', audioPath)
-      toaster.create({
+      // Update toast to success
+      toaster.update(generationToastId, {
+        title: 'TTS generated successfully!',
         description: (
           <>
             File saved at <span class="font-mono">{es.finalAudioPath}</span>.{' '}
@@ -178,12 +211,23 @@ function EdgeTts() {
         duration: 10000,
       })
     } catch (err) {
-      toaster.error({
-        title: 'Error',
-        description: String(err),
-      })
+      // Update toast to error
+      if (generationToastId) {
+        toaster.update(generationToastId, {
+          title: 'Error generating TTS',
+          description: String(err),
+          type: 'error',
+          duration: 5000,
+        })
+      } else {
+        toaster.error({
+          title: 'Error',
+          description: String(err),
+        })
+      }
     } finally {
       setEdgeStore('isLoading', false)
+      generationToastId = undefined
     }
   }
 
@@ -399,7 +443,7 @@ function EdgeTts() {
             when={es.progress.total !== 0 && es.progress.total !== es.progress.finished}
             fallback="Generate"
           >
-            Generating ({es.progress.finished}/{es.progress.total})
+            Generating
           </Show>
         </Button>
       </div>

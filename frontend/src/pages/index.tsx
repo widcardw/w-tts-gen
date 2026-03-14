@@ -1,4 +1,4 @@
-import { Show, createMemo, onMount } from 'solid-js'
+import { Show, createMemo, onMount, createEffect, on } from 'solid-js'
 import { Browser, Dialogs } from '@wailsio/runtime'
 
 import { nativeStore as ns, setNativeStore, configStore, setConfigStore } from '~/stores/app'
@@ -20,6 +20,7 @@ import { chooseAndRead } from '~/utils/choose-txt'
 
 function Home() {
   const toaster = useToaster()
+  let generationToastId: string | undefined
 
   async function getVoices() {
     const loadingToast = toaster.create({
@@ -52,6 +53,27 @@ function Home() {
     if (ns.selCate === 'default') return undefined
     return ns.voiceInfo.find((i) => i.lang === ns.selLang && i.name === ns.selSpeaker)
   })
+
+  // Update progress toast when progress changes
+  createEffect(on(
+    () => [ns.progress.finished, ns.progress.total],
+    ([finished, total]) => {
+      if (generationToastId && total > 0 && finished <= total) {
+        toaster.update(generationToastId, {
+          title: 'Generating TTS...',
+          description: (<>
+            <div>Progress: {finished}/{total} segments completed</div>
+            <div class="w-full rounded-3px h-5px bg-border flex">
+              <div class="bg-primary rounded-3px h-5px" style={{
+                'width': `${finished/total * 100}%`
+              }} />
+            </div>
+          </>),
+          type: 'info',
+        })
+      }
+    }
+  ))
 
   onMount(async () => {
     if (ns.voiceInfo.length === 0) {
@@ -91,6 +113,15 @@ function Home() {
     }
     try {
       setNativeStore('isLoading', true)
+      // Reset progress
+      setNativeStore('progress', { finished: 0, total: 0 })
+      // Create generation progress toast
+      generationToastId = toaster.create({
+        title: 'Generating TTS...',
+        description: 'Preparing to generate audio files...',
+        type: 'info',
+        duration: Infinity,
+      })
       const audioPath = await NativeTts.GenerateSpeech(
         selectedVoice(),
         ns.content,
@@ -99,7 +130,9 @@ function Home() {
         ns.compress,
       )
       setNativeStore('finalAudioPath', audioPath)
-      toaster.create({
+      // Update toast to success
+      toaster.update(generationToastId, {
+        title: 'TTS generated successfully!',
         description: (
           <>
             File saved at <span class="font-mono break-all">{ns.finalAudioPath}</span>.{' '}
@@ -122,12 +155,23 @@ function Home() {
         duration: 10000,
       })
     } catch (err) {
-      toaster.error({
-        title: 'Error',
-        description: String(err),
-      })
+      // Update toast to error
+      if (generationToastId) {
+        toaster.update(generationToastId, {
+          title: 'Error generating TTS',
+          description: String(err),
+          type: 'error',
+          duration: Infinity,
+        })
+      } else {
+        toaster.error({
+          title: 'Error',
+          description: String(err),
+        })
+      }
     } finally {
       setNativeStore('isLoading', false)
+      generationToastId = undefined
     }
   }
 
@@ -341,7 +385,7 @@ function Home() {
             when={ns.progress.total !== 0 && ns.progress.total !== ns.progress.finished}
             fallback="Generate"
           >
-            Generating ({ns.progress.finished}/{ns.progress.total})
+            Generating
           </Show>
         </Button>
       </div>
