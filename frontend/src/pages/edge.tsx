@@ -41,10 +41,16 @@ function EdgeTts() {
       })
     } catch (err) {
       console.error('Error listing voices:', err)
+      let errMsg: string
+      if (err instanceof Error) {
+        errMsg = err.message
+      } else {
+        errMsg = String(err)
+      }
       toaster.update(loadingToast, {
         title: 'Error Listing Edge Voices',
         type: 'error',
-        description: String(err),
+        description: errMsg,
       })
     } finally {
       setIsLoading(false)
@@ -90,25 +96,34 @@ function EdgeTts() {
   })
 
   // Update progress toast when progress changes
-  createEffect(on(
-    () => [es.progress.finished, es.progress.total],
-    ([finished, total]) => {
-      if (generationToastId && total > 0 && finished <= total) {
-        toaster.update(generationToastId, {
-          title: 'Generating TTS...',
-          description: (<>
-            <div>Progress: {finished}/{total} segments completed</div>
-            <div class="w-full rounded-3px h-5px bg-border flex">
-              <div class="bg-primary rounded-3px h-5px" style={{
-                'width': `${finished/total * 100}%`
-              }} />
-            </div>
-          </>),
-          type: 'info',
-        })
-      }
-    }
-  ))
+  createEffect(
+    on(
+      () => [es.progress.finished, es.progress.total],
+      ([finished, total]) => {
+        if (generationToastId && total > 0 && finished <= total) {
+          toaster.update(generationToastId, {
+            title: 'Generating TTS...',
+            description: (
+              <>
+                <div>
+                  Progress: {finished}/{total} segments completed
+                </div>
+                <div class="w-full rounded-3px h-5px bg-border flex">
+                  <div
+                    class="bg-primary rounded-3px h-5px"
+                    style={{
+                      width: `${(finished / total) * 100}%`,
+                    }}
+                  />
+                </div>
+              </>
+            ),
+            type: 'info',
+          })
+        }
+      },
+    ),
+  )
 
   async function ChooseOutputDialog() {
     try {
@@ -124,9 +139,15 @@ function EdgeTts() {
     } catch (err) {
       console.error('Error selecting file:', err)
       setEdgeStore('outputPath', '')
-      setEdgeStore('errMsg', err)
+      let errMsg: string
+      if (err instanceof Error) {
+        errMsg = err.message
+      } else {
+        errMsg = String(err)
+      }
+      setEdgeStore('errMsg', errMsg)
       toaster.error({
-        description: String(err),
+        description: String(errMsg),
       })
     }
     await checkPathStat()
@@ -211,20 +232,28 @@ function EdgeTts() {
         duration: 10000,
       })
     } catch (err) {
+      let errMsg: string
+      if (err instanceof Error) {
+        errMsg = err.message
+      } else {
+        errMsg = String(err)
+      }
       // Update toast to error
       if (generationToastId) {
         toaster.update(generationToastId, {
           title: 'Error generating TTS',
-          description: String(err),
+          description: errMsg,
           type: 'error',
-          duration: 5000,
+          duration: Infinity,
         })
       } else {
         toaster.error({
           title: 'Error',
-          description: String(err),
+          description: errMsg,
+          duration: Infinity,
         })
       }
+      console.error(err)
     } finally {
       setEdgeStore('isLoading', false)
       generationToastId = undefined

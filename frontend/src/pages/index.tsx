@@ -39,11 +39,18 @@ function Home() {
         duration: 5000,
       })
     } catch (e) {
+      let errMsg: string
+      if (e instanceof Error) {
+        errMsg = e.message
+      } else {
+        errMsg = String(e)
+      }
       toaster.update(loadingToast, {
         title: 'Error loading voices!',
-        description: String(e),
+        description: errMsg,
         type: 'error',
       })
+      console.error(e)
     } finally {
       setNativeStore('isLoading', false)
     }
@@ -55,25 +62,34 @@ function Home() {
   })
 
   // Update progress toast when progress changes
-  createEffect(on(
-    () => [ns.progress.finished, ns.progress.total],
-    ([finished, total]) => {
-      if (generationToastId && total > 0 && finished <= total) {
-        toaster.update(generationToastId, {
-          title: 'Generating TTS...',
-          description: (<>
-            <div>Progress: {finished}/{total} segments completed</div>
-            <div class="w-full rounded-3px h-5px bg-border flex">
-              <div class="bg-primary rounded-3px h-5px" style={{
-                'width': `${finished/total * 100}%`
-              }} />
-            </div>
-          </>),
-          type: 'info',
-        })
-      }
-    }
-  ))
+  createEffect(
+    on(
+      () => [ns.progress.finished, ns.progress.total],
+      ([finished, total]) => {
+        if (generationToastId && total > 0 && finished <= total) {
+          toaster.update(generationToastId, {
+            title: 'Generating TTS...',
+            description: (
+              <>
+                <div>
+                  Progress: {finished}/{total} segments completed
+                </div>
+                <div class="w-full rounded-3px h-5px bg-border flex">
+                  <div
+                    class="bg-primary rounded-3px h-5px"
+                    style={{
+                      width: `${(finished / total) * 100}%`,
+                    }}
+                  />
+                </div>
+              </>
+            ),
+            type: 'info',
+          })
+        }
+      },
+    ),
+  )
 
   onMount(async () => {
     if (ns.voiceInfo.length === 0) {
@@ -101,8 +117,14 @@ function Home() {
     } catch (err) {
       console.error('Error selecting file:', err)
       setNativeStore('outputPath', '')
-      setNativeStore('errMsg', err)
-      toaster.error({ description: String(err) })
+      let errMsg: string
+      if (err instanceof Error) {
+        errMsg = err.message
+      } else {
+        errMsg = String(err)
+      }
+      setNativeStore('errMsg', errMsg)
+      toaster.error({ description: errMsg })
     }
     await checkPathStat()
   }
@@ -155,18 +177,24 @@ function Home() {
         duration: 10000,
       })
     } catch (err) {
+      let errMsg: string
+      if (err instanceof Error) {
+        errMsg = err.message
+      } else {
+        errMsg = String(err)
+      }
       // Update toast to error
       if (generationToastId) {
         toaster.update(generationToastId, {
           title: 'Error generating TTS',
-          description: String(err),
+          description: errMsg,
           type: 'error',
           duration: Infinity,
         })
       } else {
         toaster.error({
           title: 'Error',
-          description: String(err),
+          description: errMsg,
         })
       }
     } finally {
@@ -239,7 +267,7 @@ function Home() {
       </Field.Root>
 
       <div class="flex gap-6">
-          <Switch.Root
+        <Switch.Root
           class={switchStyles.Root}
           checked={ns.autoSlice}
           onCheckedChange={(e) => {

@@ -42,10 +42,8 @@ function App() {
     setEdgeStore('outputPath', conf.defaultSaveDir)
     changeTheme(conf.theme as 'auto' | 'light' | 'dark')
     watchThemeIfAuto()
-
-
   })
-  
+
   // 注册事件监听器
   const cleanupNativeProgressListener = Events.On('progress:native', (data) => {
     console.log('event', data)

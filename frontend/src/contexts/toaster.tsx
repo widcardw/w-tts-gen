@@ -9,12 +9,8 @@ export function ToasterProvider(props: { children: JSX.Element }) {
     overlap: true,
     gap: 24,
   })
-  
-  return (
-    <ToasterContext.Provider value={toaster}>
-      {props.children}
-    </ToasterContext.Provider>
-  )
+
+  return <ToasterContext.Provider value={toaster}>{props.children}</ToasterContext.Provider>
 }
 
 export function useToaster() {
