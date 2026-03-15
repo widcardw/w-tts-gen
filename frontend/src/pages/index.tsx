@@ -376,7 +376,28 @@ function Home() {
         </Tabs.Content>
       </Tabs.Root>
 
-      <div class="flex justify-end">
+      <div class="flex justify-end gap-4">
+        <Show when={ns.isLoading}>
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              const confirm = await Dialogs.Question({
+                Title: 'Force Stop',
+                Message: 'Are you sure you want to stop the current generation?',
+                Buttons: [
+                  { Label: 'Stop', IsDefault: true, IsCancel: false },
+                  { Label: 'Cancel', IsDefault: false, IsCancel: true },
+                ],
+              })
+              if (confirm === 'Stop') {
+                await NativeTts.StopGeneration()
+              }
+            }}
+          >
+            <div class="i-ri-stop-line" />
+            Force Stop
+          </Button>
+        </Show>
         <Button
           onClick={generateTtsNative}
           disabled={ns.content.trim() === '' || ns.outputPath === '' || ns.isLoading}

@@ -15,6 +15,11 @@ import (
 
 type EdgeTtsService struct{}
 
+// StopGeneration 设置停止标志，停止当前正在进行的生成
+func (e *EdgeTtsService) StopGeneration() {
+	SetGenerationStop()
+}
+
 var edgeVoicesCache []edge_tts.Voice
 
 func init() {
@@ -95,9 +100,14 @@ func (e *EdgeTtsService) GenerateSpeech(v edge_tts.Voice, r string, vo string, p
 			// 创建恢复任务
 			configService.CreateRecoveryTask("edge", content, v.ShortName, v.Locale, folderPath, autoSlice, len(segments))
 			defer configService.ClearRecoveryTask() // 正常完成后清除任务
+			defer ClearGenerationStop() // 确保最后清除停止标志
 
 			// 逐个生成音频
 			for i, segment := range segments {
+				// 检查是否需要停止
+				if IsGenerationStopped() {
+					return folderPath, fmt.Errorf("generation stopped by user")
+				}
 				filename := GetSegmentFileName(i+1, segment) + ".mp3"
 				segmentPath := filepath.Join(folderPath, filename)
 

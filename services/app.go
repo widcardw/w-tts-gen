@@ -1,9 +1,29 @@
 package services
 
 import (
+	"sync/atomic"
+
 	"github.com/wujunwei928/edge-tts-go/edge_tts"
 	"runtime"
 )
+
+// GenerationStopFlag 全局生成停止标志
+var GenerationStopFlag int32 = 0
+
+// SetGenerationStop 设置停止标志
+func SetGenerationStop() {
+	atomic.StoreInt32(&GenerationStopFlag, 1)
+}
+
+// ClearGenerationStop 清除停止标志
+func ClearGenerationStop() {
+	atomic.StoreInt32(&GenerationStopFlag, 0)
+}
+
+// IsGenerationStopped 检查是否需要停止
+func IsGenerationStopped() bool {
+	return atomic.LoadInt32(&GenerationStopFlag) == 1
+}
 
 type EnvResult struct {
 	IsStartup   bool   `json:"-"`

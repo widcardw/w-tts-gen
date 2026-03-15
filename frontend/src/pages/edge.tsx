@@ -434,7 +434,28 @@ function EdgeTts() {
         </div>
       </Slider.Root>
 
-      <div class="flex justify-end">
+      <div class="flex justify-end gap-4">
+        <Show when={es.isLoading}>
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              const confirm = await Dialogs.Question({
+                Title: 'Force Stop',
+                Message: 'Are you sure you want to stop the current generation?',
+                Buttons: [
+                  { Label: 'Stop', IsDefault: true, IsCancel: false },
+                  { Label: 'Cancel', IsDefault: false, IsCancel: true },
+                ],
+              })
+              if (confirm === 'Stop') {
+                await EdgeTtsService.StopGeneration()
+              }
+            }}
+          >
+            <div class="i-ri-stop-line" />
+            Force Stop
+          </Button>
+        </Show>
         <Button
           onClick={generateTtsEdge}
           disabled={es.content.trim() === '' || es.outputPath === '' || es.isLoading}
