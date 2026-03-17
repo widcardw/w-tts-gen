@@ -4,14 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check",
-    "build:dev": "vite build --minify false --mode development",
-    "build": "vite build --mode production",
-    "preview": "vite preview"
+    "dev": "vp dev",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "build:dev": "vp build --minify false --mode development",
+    "build": "vp build --mode production",
+    "preview": "vp preview"
   },
   "dependencies": {
     "@ark-ui/solid": "^5.30.0",
@@ -24,12 +24,18 @@
     "@tanstack/solid-virtual": "^3.13.18",
     "@types/node": "^25.0.10",
     "clsx": "^2.1.1",
-    "oxfmt": "^0.23.0",
-    "oxlint": "^1.38.0",
     "typescript": "^5.9.3",
     "unocss": "^66.5.12",
-    "vite": "npm:rolldown-vite@latest",
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
     "vite-plugin-pages": "^0.33.2",
-    "vite-plugin-solid": "^2.11.10"
+    "vite-plugin-solid": "^2.11.10",
+    "vite-plus": "latest"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    }
   }
 }
